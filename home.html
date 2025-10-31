@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoicer - Professional Invoice Generator with Gmail Integration</title>
+  <meta name="description" content="Free invoice generator with Gmail integration. Create professional invoices, generate PDFs, and send directly via email. No registration required.">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+      color: #334155;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .header {
+      background: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e293b;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: #1e293b;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -2px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav a {
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .nav a:hover {
+      color: #3b82f6;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 56px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 24px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 48px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 18px 48px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      background: white;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .features {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .feature-desc {
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .data-section {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 48px 20px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .data-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .data-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .data-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .data-point-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .data-point-text {
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .data-point-text strong {
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .privacy-banner {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 24px;
+      border-radius: 12px;
+      margin-top: 32px;
+    }
+
+    .privacy-banner-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 8px;
+    }
+
+    .privacy-banner-text {
+      color: #1e40af;
+      margin-bottom: 16px;
+    }
+
+    .privacy-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .privacy-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .privacy-link:hover {
+      background: #2563eb;
+    }
+
+    .footer {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 48px 20px;
+      margin-top: 80px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+      color: white;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-link:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    .footer-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 36px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .nav {
+        gap: 16px;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <a href="./" class="logo">
+        <div class="logo-icon">IN</div>
+        Invoicer
+      </a>
+      <nav class="nav">
+        <a href="index.html">Launch App</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="terms-of-service.html">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Professional Invoice Generator</h1>
+      <p class="subtitle">
+        Create beautiful invoices, generate PDFs, and send them directly via Gmail. 
+        No registration. No subscription. 100% free.
+      </p>
+      <a href="index.html" class="cta-button">Launch App →</a>
+    </section>
+
+    <section class="features">
+      <h2 class="section-title">What Invoicer Does</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3 class="feature-title">Create Invoices</h3>
+          <p class="feature-desc">
+            Build professional invoices with line items, period tracking, hours calculation, 
+            tax, and discounts. Real-time preview as you type.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📄</div>
+          <h3 class="feature-title">Generate PDFs</h3>
+          <p class="feature-desc">
+            Export high-quality PDF invoices optimized for A4/Letter format. 
+            Perfect for printing or emailing to clients.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📧</div>
+          <h3 class="feature-title">Send via Gmail</h3>
+          <p class="feature-desc">
+            Connect your Gmail account to send invoices directly with PDF attachments. 
+            Pre-filled professional messages make sending quick and easy.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3 class="feature-title">Customize Design</h3>
+          <p class="feature-desc">
+            Choose your brand colors, add your business details, and create invoices 
+            that match your professional identity.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3 class="feature-title">Mobile Friendly</h3>
+          <p class="feature-desc">
+            Works perfectly on phones, tablets, and desktops. Create and send invoices 
+            from anywhere, on any device.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3 class="feature-title">Your Data, Your Device</h3>
+          <p class="feature-desc">
+            All invoice data stays on your device. No servers, no databases, 
+            no data collection. Complete privacy and security.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="data-section">
+      <h2 class="data-title">How We Use Your Google Data</h2>
+      <div class="data-content">
+        <p style="text-align: center; margin-bottom: 32px; color: #64748b; font-size: 18px;">
+          Transparency is important to us. Here's exactly how Invoicer uses your Google account:
+        </p>
+
+        <div class="data-point">
+          <div class="data-point-icon">✉️</div>
+          <div class="data-point-text">
+            <strong>Gmail Send Permission:</strong> When you connect Gmail, we request permission to send emails on your behalf. This allows you to send invoice PDFs directly to your clients.
+          </div>
+        </div>
+
+        <div class="data-point">
+          <div class="data-point-icon">👤</div>
+          <div class="data-point-text">
+            <strong>Your Email Address:</strong> We display your connected Gmail address in the app so you know which account is connected. That's it.
+          </div>
+        </div>
+
+        <div class="data-point">
+          <div class="data-point-icon">❌</div>
+          <div class="data-point-text">
+            <strong>What We DON'T Access:</strong> We cannot read your emails, access your contacts, view your calendar, or access any other Google services. We only have permission to send emails.
+          </div>
+        </div>
+
+        <div class="data-point">
+          <div class="data-point-icon">💾</div>
+          <div class="data-point-text">
+            <strong>No Data Storage:</strong> We don't have servers or databases. All your invoice data stays on your device. When you send an email, it goes directly from your browser to Gmail.
+          </div>
+        </div>
+
+        <div class="data-point">
+          <div class="data-point-icon">🔄</div>
+          <div class="data-point-text">
+            <strong>Revoke Anytime:</strong> You can disconnect your Gmail account at any time through your Google Account settings. No data to delete, because we never stored any.
+          </div>
+        </div>
+
+        <div class="data-point">
+          <div class="data-point-icon">🛡️</div>
+          <div class="data-point-text">
+            <strong>Google OAuth 2.0:</strong> We use Google's secure OAuth 2.0 authentication. You authorize directly through Google's sign-in page, not through us.
+          </div>
+        </div>
+
+        <div class="privacy-banner">
+          <div class="privacy-banner-title">📋 Our Commitment to Your Privacy</div>
+          <p class="privacy-banner-text">
+            Invoicer is a client-side application that runs entirely in your browser. 
+            We don't collect, store, or share your data with anyone. Your privacy is not just a promise—it's built into how the app works.
+          </p>
+          <div class="privacy-links">
+            <a href="privacy-policy.html" class="privacy-link">Read Privacy Policy</a>
+            <a href="terms-of-service.html" class="privacy-link">Read Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero" style="margin: 80px auto 40px;">
+      <h2 class="section-title">Ready to Create Professional Invoices?</h2>
+      <p class="subtitle">
+        No registration required. No credit card needed. Just open the app and start creating.
+      </p>
+      <a href="index.html" class="cta-button">Launch Invoicer →</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="index.html" class="footer-link">Launch App</a>
+        <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
+        <a href="terms-of-service.html" class="footer-link">Terms of Service</a>
+        <a href="mailto:miladezzat.f@gmail.com" class="footer-link">Contact</a>
+      </div>
+      <p class="footer-text">
+        © 2024 Invoicer - Professional Invoice Generator<br>
+        Free to use. Your data stays on your device. No tracking.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+

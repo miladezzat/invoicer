@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoicer - Logo PNG Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .preview-section {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .preview-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    #logoCanvas {
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      max-width: 100%;
+      height: auto;
+    }
+
+    .sizes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .size-option {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .size-option:hover {
+      border-color: #3b82f6;
+      background: #dbeafe;
+      transform: translateY(-2px);
+    }
+
+    .size-option.active {
+      border-color: #3b82f6;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .size-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .size-desc {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .info {
+      margin-top: 32px;
+      padding: 20px;
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #78350f;
+      line-height: 1.6;
+    }
+
+    .info strong {
+      color: #92400e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Invoicer Logo Generator</h1>
+    <p class="subtitle">Generate PNG logos in various sizes</p>
+
+    <div class="preview-section">
+      <div class="preview-label">Preview</div>
+      <canvas id="logoCanvas"></canvas>
+    </div>
+
+    <div class="sizes">
+      <div class="size-option active" data-size="512">
+        <div class="size-label">512×512</div>
+        <div class="size-desc">High Quality</div>
+      </div>
+      <div class="size-option" data-size="256">
+        <div class="size-label">256×256</div>
+        <div class="size-desc">Standard</div>
+      </div>
+      <div class="size-option" data-size="128">
+        <div class="size-label">128×128</div>
+        <div class="size-desc">Small</div>
+      </div>
+      <div class="size-option" data-size="64">
+        <div class="size-label">64×64</div>
+        <div class="size-desc">Icon</div>
+      </div>
+      <div class="size-option" data-size="32">
+        <div class="size-label">32×32</div>
+        <div class="size-desc">Favicon</div>
+      </div>
+      <div class="size-option" data-size="1024">
+        <div class="size-label">1024×1024</div>
+        <div class="size-desc">Ultra HD</div>
+      </div>
+    </div>
+
+    <button id="downloadBtn">⬇️ Download PNG</button>
+
+    <div class="info">
+      <strong>💡 How to use:</strong><br>
+      1. Click on a size option above<br>
+      2. Preview updates automatically<br>
+      3. Click "Download PNG" to save<br>
+      4. Done! Use it anywhere you need!
+    </div>
+  </div>
+
+  <script>
+    let currentSize = 512;
+    const canvas = document.getElementById('logoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Draw logo function
+    function drawLogo(size) {
+      canvas.width = size;
+      canvas.height = size;
+      
+      // Background
+      ctx.fillStyle = '#1e293b';
+      roundRect(ctx, 0, 0, size, size, size * 0.2);
+      ctx.fill();
+      
+      // Text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `900 ${size * 0.48}px Arial, Helvetica, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Letter spacing effect (draw I and N separately)
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const letterSpacing = -size * 0.04;
+      
+      ctx.fillText('I', centerX - size * 0.12 + letterSpacing, centerY);
+      ctx.fillText('N', centerX + size * 0.12 + letterSpacing, centerY);
+    }
+
+    // Helper function for rounded rectangle
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    // Size selection
+    document.querySelectorAll('.size-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        currentSize = parseInt(option.dataset.size);
+        drawLogo(currentSize);
+      });
+    });
+
+    // Download button
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `invoicer-logo-${currentSize}x${currentSize}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Initial draw
+    drawLogo(currentSize);
+  </script>
+</body>
+</html>
+
