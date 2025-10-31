@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invoicer – Professional Invoice Generator</title>
+  <style>
+    :root {
+      --ink: #1e293b;        /* slate-800 */
+      --ink-light: #334155;  /* slate-700 */
+      --muted: #64748b;      /* slate-500 */
+      --line: #e2e8f0;       /* slate-200 */
+      --line-light: #f1f5f9; /* slate-100 */
+      --bg: #f8fafc;         /* slate-50 */
+      --card: #ffffff;       /* white */
+      --accent: #1e293b;     /* black/slate-800 */
+      --accent-hover: #0f172a; /* slate-900 */
+      --accent-ink: #0f172a; /* slate-900 */
+      --accent-light: #e2e8f0; /* slate-200 */
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      color: var(--ink);
+      font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 20px;
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      gap: 24px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--accent-ink);
+    }
+
+    h2 {
+      margin: 24px 0 16px;
+      padding-bottom: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink-light);
+      border-bottom: 2px solid var(--line);
+    }
+
+    h2:first-child {
+      margin-top: 0;
+    }
+
+    .card {
+      background: var(--card);
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: calc(100vh - 64px);
+    }
+
+    .card .hd {
+      padding: 24px 28px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    }
+
+    .card .hd > div:first-child {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .card .hd > div:last-child {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+
+    .card .bd {
+      padding: 28px;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .card.inputs .bd {
+      background: white;
+    }
+
+    .card.preview .bd {
+      padding: 32px;
+      background: #f8fafc;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Custom scrollbar styling */
+    .card .bd::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .card .bd::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .card .bd::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    .card .bd::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Firefox scrollbar */
+    .card .bd {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin: 0 0 8px 0;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: var(--accent);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-light);
+      background: white;
+    }
+
+    input[type="number"] {
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      font-weight: 600;
+    }
+
+    input[type="color"] {
+      padding: 6px;
+      cursor: pointer;
+      height: 48px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .row-full {
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    button:hover:before {
+      opacity: 1;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.4);
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--accent);
+      border: 2px solid var(--line);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    button.secondary:hover {
+      background: var(--line-light);
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    button.danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    button.danger:hover {
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 2px solid var(--line);
+      margin: 32px 0;
+    }
+
+    .line-items {
+      margin: 20px 0;
+    }
+
+    .line-item {
+      background: linear-gradient(135deg, var(--line-light) 0%, white 100%);
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .line-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .line-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .line-item-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .line-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .line-item-actions button {
+      padding: 8px 16px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: white;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
+    }
+
+    /* Invoice preview styles */
+    .sheet {
+      background: white;
+      border: none;
+      border-radius: 12px;
+      padding: 48px 56px;
+      width: 210mm;
+      max-width: 100%;
+      min-height: 297mm;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      position: relative;
+    }
+
+    @media (max-width: 900px) {
+      .sheet {
+        width: 100%;
+        padding: 32px 24px;
+        min-height: auto;
+      }
+    }
+
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .brand-title {
+      font-weight: 900;
+      font-size: 28px;
+      color: var(--accent-ink);
+      letter-spacing: 0.4px;
+    }
+
+    .meta {
+      min-width: 380px;
+    }
+
+    .meta .rowx {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0;
+    }
+
+    .meta .rowx > div:first-child {
+      width: 45%;
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta .rowx > div:last-child {
+      flex: 1;
+      text-align: right;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .meta .rowx:last-child {
+      border-bottom: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fafbff;
+    }
+
+    .panel .title {
+      font-weight: 800;
+      color: #0b1220;
+      margin-bottom: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+
+    .panel .content {
+      font-weight: 600;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 22px 0;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    thead th {
+      background: var(--ink);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #fafbff;
+    }
+
+    td.right, th.right {
+      text-align: right;
+    }
+
+    td.currency {
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+    }
+
+    .totals {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 28px;
+    }
+
+    .totals .box {
+      min-width: 360px;
+      border: 1px solid var(--ink);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .totals .box .rowy {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .totals .box .rowy:nth-child(odd) {
+      background: #fafbff;
+    }
+
+    .totals .box .rowy span:last-child {
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+    }
+
+    .totals .box .rowy:last-child {
+      border-bottom: none;
+      background: var(--accent-ink);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .totals .box .rowy:last-child span:last-child {
+      color: #fff;
+    }
+
+    .note {
+      margin-top: 18px;
+      margin-bottom: 80px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--muted);
+      background: #fafbff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .invoice-footer {
+      margin-top: auto;
+    }
+
+    /* Ensure content doesn't overlap footer */
+    .sheet > div {
+      position: relative;
+      min-height: 100%;
+      padding-bottom: 80px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .validation-error {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* --- Print control --- */
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        height: auto;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .wrap {
+        display: block;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        background: white;
+      }
+
+      .card.inputs {
+        display: none !important;
+      }
+
+      .card.preview {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: white !important;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card.preview .bd {
+        padding: 0 !important;
+      }
+
+      .sheet {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 auto !important;
+        padding: 20mm 20mm 15mm 20mm !important;
+        background: white !important;
+      }
+
+      .actions, .toolbar {
+        display: none !important;
+      }
+
+      /* Ensure proper page breaks */
+      .inv-header, .grid, table, .totals {
+        page-break-inside: avoid;
+      }
+
+      /* Footer positioning for print */
+      .invoice-footer {
+        position: fixed !important;
+        bottom: 15mm !important;
+        left: 20mm !important;
+        right: 20mm !important;
+        width: calc(210mm - 40mm) !important;
+      }
+
+      /* Add space for footer */
+      .sheet > div {
+        padding-bottom: 100px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- LEFT: Inputs -->
+    <div class="card inputs">
+      <div class="hd">
+        <div>Invoicer</div>
+        <div class="muted" style="font-weight: 600; font-size: 12px;">v1.0</div>
+      </div>
+      <div class="bd">
+        <!-- Basic Info -->
+        <h2>Basic Information</h2>
+        <div class="row">
+          <div>
+            <label>Freelancer Name</label>
+            <input id="in_freelancer" placeholder="Your name" value="Milad Ezzzat" />
+          </div>
+          <div>
+            <label>Email</label>
+            <input id="in_email" type="email" placeholder="your@email.com" value="miladezzat.f@gmail.com" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Client Name</label>
+            <input id="in_client" placeholder="Client name" value="Mini Studio Inc" />
+          </div>
+            <div>
+            <label>Invoice Number</label>
+            <input id="in_number" placeholder="INV-0001" value="0001" />
+            </div>
+            </div>
+
+        <div class="row">
+          <div>
+            <label>Invoice Date</label>
+            <input id="in_date" type="date" />
+          </div>
+          <div>
+            <label>Due Date</label>
+            <input id="in_due" type="date" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Currency</label>
+            <select id="in_currency">
+              <option value="$" selected>$ (USD)</option>
+              <option value="€">€ (EUR)</option>
+              <option value="£">£ (GBP)</option>
+              <option value="¥">¥ (JPY)</option>
+            </select>
+          </div>
+          <div>
+            <label>Brand Color</label>
+            <input type="color" id="in_color" value="#1e293b" style="height: 44px; cursor: pointer;" />
+          </div>
+          </div>
+
+        <hr class="section-divider" />
+
+        <!-- Line Items -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0 16px;">
+          <h2 style="margin: 0; border: none; padding: 0;">Line Items</h2>
+          <button id="btn_add_item" class="secondary" style="padding: 10px 20px; font-size: 13px; font-weight: 700;">
+            <span style="font-size: 16px; margin-right: 4px;">+</span> Add Item
+          </button>
+        </div>
+
+        <div class="line-items" id="line_items_container">
+          <!-- Line items inserted here -->
+        </div>
+
+        <hr class="section-divider" />
+
+        <!-- Totals Config -->
+        <h2>Totals</h2>
+        <div class="row">
+          <div>
+            <label>Tax (%)</label>
+            <input id="in_tax" type="number" step="0.01" value="0" />
+          </div>
+          <div>
+            <label>Discount (flat)</label>
+            <input id="in_discount" type="number" step="0.01" value="0" />
+          </div>
+          </div>
+
+        <div class="row-full">
+          <label>Footer Notes</label>
+          <textarea id="in_note" placeholder="Optional text shown under totals"></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="btn_update" class="secondary" type="button">
+            <span style="font-size: 16px; margin-right: 6px;">↻</span> Refresh Preview
+          </button>
+          <button id="btn_print" type="button">
+            <span style="font-size: 16px; margin-right: 6px;">⬇</span> Print / PDF
+          </button>
+        </div>
+
+        <div style="margin-top: 16px; padding: 14px; background: var(--accent-light); border-left: 4px solid var(--accent); border-radius: 8px;">
+          <p style="margin: 0; font-size: 13px; color: var(--ink); font-weight: 600;">
+            💡 <strong>Tip:</strong> Click <strong>Print / PDF</strong> button and choose "Save as PDF" to export your invoice.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Preview -->
+    <div class="card preview">
+      <div class="bd">
+        <div class="sheet" id="preview">
+          <div class="empty-state">
+            <div class="empty-state-icon">📄</div>
+            <p>Loading preview...</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+  <template id="tpl-invoice">
+    <div>
+      <!-- Header -->
+      <div class="inv-header">
+        <div class="brand">
+          <div class="brand-badge" id="p_badge">IN</div>
+          <div class="brand-title">INVOICER</div>
+        </div>
+        <div class="meta">
+          <div class="rowx"><div>Invoice #</div><div id="p_num"></div></div>
+          <div class="rowx"><div>Date</div><div id="p_date"></div></div>
+          <div class="rowx"><div>Due</div><div id="p_due"></div></div>
+        </div>
+      </div>
+
+      <!-- Parties -->
+      <div class="grid">
+        <div class="panel">
+          <div class="title">From</div>
+          <div class="content" id="p_from"></div>
+        </div>
+        <div class="panel">
+          <div class="title">Bill To</div>
+          <div class="content" id="p_to"></div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Period</th>
+            <th class="right">Days</th>
+            <th class="right">Hours</th>
+            <th class="right">Rate</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="p_items">
+          <!-- Items inserted here -->
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+      <div class="totals">
+        <div class="box">
+          <div class="rowy"><span>Subtotal</span><span id="p_subtotal" class="currency"></span></div>
+          <div class="rowy" id="p_tax_row" style="display: none;"><span>Tax</span><span id="p_tax" class="currency"></span></div>
+          <div class="rowy" id="p_discount_row" style="display: none;"><span>Discount</span><span id="p_discount" class="currency"></span></div>
+          <div class="rowy"><span>Total Due</span><span id="p_total" class="currency"></span></div>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="note" id="p_note_wrap" style="display: none;"></div>
+
+      <!-- Footer -->
+      <div class="invoice-footer" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 0; border-top: 2px solid var(--line); text-align: center; background: white;">
+        <p style="margin: 0; font-size: 12px; color: var(--muted); font-weight: 600;">
+          Powered by <span style="color: var(--accent); font-weight: 700;">Invoicer</span>
+        </p>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-line-item">
+    <div class="line-item">
+      <div class="line-item-header">
+        <div class="line-item-title" data-index="">Item <span class="badge" data-index=""></span></div>
+        <div class="line-item-actions">
+          <button class="secondary" data-action="remove" style="padding: 6px 10px; font-size: 12px;">Delete</button>
+        </div>
+      </div>
+      <div class="row-full">
+        <label>Description</label>
+        <input placeholder="e.g., Web Development Services" data-field="description" />
+      </div>
+      <div class="row">
+        <div>
+          <label>Period From</label>
+          <input type="date" data-field="periodFrom" />
+        </div>
+        <div>
+          <label>Period To</label>
+          <input type="date" data-field="periodTo" />
+        </div>
+      </div>
+      <div class="row-3">
+        <div>
+          <label>Days (optional)</label>
+          <input type="number" placeholder="15" step="1" value="" data-field="days" />
+        </div>
+        <div>
+          <label>Hours/Day (optional)</label>
+          <input type="number" placeholder="8" step="0.5" value="" data-field="hoursPerDay" />
+        </div>
+        <div>
+          <label>Total Hours</label>
+          <input type="number" placeholder="120" step="0.01" value="" data-field="quantity" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Hourly Rate</label>
+          <input type="number" placeholder="50.00" step="0.01" value="100" data-field="rate" />
+        </div>
+        <div>
+          <label>Amount (auto)</label>
+          <input type="number" step="0.01" data-field="amount" disabled style="background: #f0f4ff;" />
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // ============================================================================
+    // CONSTANTS
+    // ============================================================================
+    const CONFIG = {
+      SELECTORS: {
+        freelancer: '#in_freelancer',
+        email: '#in_email',
+        client: '#in_client',
+        number: '#in_number',
+        date: '#in_date',
+        due: '#in_due',
+        currency: '#in_currency',
+        color: '#in_color',
+        tax: '#in_tax',
+        discount: '#in_discount',
+        note: '#in_note',
+        lineItemsContainer: '#line_items_container',
+        preview: '#preview',
+        updateBtn: '#btn_update',
+        printBtn: '#btn_print',
+        printTopBtn: '#btn_print_top',
+        addItemBtn: '#btn_add_item'
+      },
+      DEFAULTS: {
+        lineItem: { description: '', periodFrom: '', periodTo: '', days: '', hoursPerDay: '', quantity: '', rate: 100, amount: 0 }
+      }
+    };
+
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+    class InvoiceState {
+      constructor() {
+        this.lineItems = [{ ...CONFIG.DEFAULTS.lineItem }];
+      }
+
+      addLineItem() {
+        this.lineItems.push({ ...CONFIG.DEFAULTS.lineItem });
+        return this.lineItems.length - 1;
+      }
+
+      removeLineItem(index) {
+        if (this.lineItems.length > 1) {
+          this.lineItems.splice(index, 1);
+          return true;
+        }
+        return false;
+      }
+
+      getLineItem(index) {
+        return this.lineItems[index];
+      }
+
+      updateLineItem(index, field, value) {
+        if (this.lineItems[index]) {
+          this.lineItems[index][field] = value;
+          
+          // Auto-calculate total hours from days × hoursPerDay
+          if (field === 'days' || field === 'hoursPerDay') {
+            const days = parseFloat(this.lineItems[index].days) || 0;
+            const hoursPerDay = parseFloat(this.lineItems[index].hoursPerDay) || 0;
+            if (days > 0 && hoursPerDay > 0) {
+              this.lineItems[index].quantity = days * hoursPerDay;
+            }
+          }
+          
+          // Calculate amount from quantity × rate
+          if (field === 'quantity' || field === 'rate' || field === 'days' || field === 'hoursPerDay') {
+            const quantity = parseFloat(this.lineItems[index].quantity) || 0;
+            const rate = parseFloat(this.lineItems[index].rate) || 0;
+            this.lineItems[index].amount = quantity * rate;
+          }
+        }
+      }
+
+      getSubtotal() {
+        return this.lineItems.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+      }
+    }
+
+    // ============================================================================
+    // UTILITIES
+    // ============================================================================
+    const Utils = {
+      $(selector) {
+        return document.querySelector(selector);
+      },
+
+      formatMoney(amount, currency) {
+        const num = Number(amount || 0);
+        return `${currency}${num.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}`;
+      },
+
+      shadeColor(hex, amount) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+          hex = hex.split('').map(c => c + c).join('');
+        }
+        const num = parseInt(hex, 16);
+        let r = (num >> 16) + amount;
+        let g = (num >> 8 & 0x00FF) + amount;
+        let b = (num & 0x0000FF) + amount;
+
+        r = Math.max(0, Math.min(255, r));
+        g = Math.max(0, Math.min(255, g));
+        b = Math.max(0, Math.min(255, b));
+
+        return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+      },
+
+      setAccentColor(hex) {
+      document.documentElement.style.setProperty('--accent', hex);
+        const darkHex = Utils.shadeColor(hex, -35);
+        document.documentElement.style.setProperty('--accent-ink', darkHex);
+
+        const badge = Utils.$('p_badge');
+        if (badge) badge.style.background = hex;
+      },
+
+      getTodayISO() {
+        return new Date().toISOString().slice(0, 10);
+      }
+    };
+
+    // ============================================================================
+    // INVOICE BUILDER
+    // ============================================================================
+    class InvoiceBuilder {
+      constructor(state) {
+        this.state = state;
+        this.buildPreview = this.buildPreview.bind(this);
+        this.setupEventListeners();
+        this.renderLineItemsUI();
+        this.initializeDefaults();
+        this.buildPreview();
+      }
+
+      initializeDefaults() {
+        const today = Utils.getTodayISO();
+        Utils.$(CONFIG.SELECTORS.date).value = today;
+        Utils.$(CONFIG.SELECTORS.due).value = today;
+      }
+
+      setupEventListeners() {
+        // Line item management
+        const addBtn = Utils.$(CONFIG.SELECTORS.addItemBtn);
+        if (addBtn) addBtn.addEventListener('click', () => this.addLineItem());
+
+        // Form inputs
+        [
+          CONFIG.SELECTORS.freelancer,
+          CONFIG.SELECTORS.email,
+          CONFIG.SELECTORS.client,
+          CONFIG.SELECTORS.number,
+          CONFIG.SELECTORS.date,
+          CONFIG.SELECTORS.due,
+          CONFIG.SELECTORS.currency,
+          CONFIG.SELECTORS.color,
+          CONFIG.SELECTORS.tax,
+          CONFIG.SELECTORS.discount,
+          CONFIG.SELECTORS.note
+        ].forEach(selector => {
+          const el = Utils.$(selector);
+          if (el) {
+            el.addEventListener('change', this.buildPreview);
+            el.addEventListener('input', this.buildPreview);
+          }
+        });
+
+        // Buttons
+        const updateBtn = Utils.$(CONFIG.SELECTORS.updateBtn);
+        if (updateBtn) updateBtn.addEventListener('click', this.buildPreview);
+
+        const printBtn = Utils.$(CONFIG.SELECTORS.printBtn);
+        if (printBtn) printBtn.addEventListener('click', () => this.print());
+
+        const printTopBtn = Utils.$(CONFIG.SELECTORS.printTopBtn);
+        if (printTopBtn) printTopBtn.addEventListener('click', () => this.print());
+
+        // Delegate line item events
+        const container = Utils.$(CONFIG.SELECTORS.lineItemsContainer);
+        if (container) {
+          container.addEventListener('input', (e) => {
+            this.handleLineItemInput(e);
+          });
+
+          container.addEventListener('click', (e) => {
+            if (e.target.dataset.action === 'remove') {
+              const itemEl = e.target.closest('.line-item');
+              const index = Array.from(container.children).indexOf(itemEl);
+              this.removeLineItem(index);
+            }
+          });
+        }
+      }
+
+      handleLineItemInput(event) {
+        const input = event.target;
+        if (!input.dataset.field) return;
+
+        const itemEl = input.closest('.line-item');
+        const index = Array.from(Utils.$(CONFIG.SELECTORS.lineItemsContainer).children).indexOf(itemEl);
+        const field = input.dataset.field;
+        let value = input.value;
+
+        if (field === 'quantity' || field === 'rate' || field === 'days' || field === 'hoursPerDay') {
+          value = parseFloat(value) || 0;
+        }
+
+        this.state.updateLineItem(index, field, value);
+
+        // Update calculated fields in UI
+        const item = this.state.getLineItem(index);
+        const qtyInput = itemEl.querySelector('[data-field="quantity"]');
+        if (qtyInput && item.quantity) qtyInput.value = item.quantity;
+        
+        const amountInput = itemEl.querySelector('[data-field="amount"]');
+        if (amountInput) amountInput.value = item.amount;
+
+        this.buildPreview();
+      }
+
+      addLineItem() {
+        const index = this.state.addLineItem();
+        this.renderLineItemsUI();
+        this.buildPreview();
+      }
+
+      removeLineItem(index) {
+        if (this.state.removeLineItem(index)) {
+          this.renderLineItemsUI();
+          this.buildPreview();
+        }
+      }
+
+      renderLineItemsUI() {
+        try {
+          const container = Utils.$(CONFIG.SELECTORS.lineItemsContainer);
+          if (!container) return;
+
+          container.innerHTML = '';
+
+          this.state.lineItems.forEach((item, index) => {
+            const template = document.getElementById('tpl-line-item');
+            if (!template) {
+              console.error('Line item template not found');
+              return;
+            }
+
+            const clone = document.importNode(template.content, true);
+
+            // Set badge index (only the span, not the parent div)
+            const badge = clone.querySelector('.badge[data-index]');
+            if (badge) badge.textContent = index + 1;
+
+            // Set values - with safe checks
+            const descInput = clone.querySelector('[data-field="description"]');
+            if (descInput) descInput.value = item.description;
+
+            const periodFromInput = clone.querySelector('[data-field="periodFrom"]');
+            if (periodFromInput) periodFromInput.value = item.periodFrom;
+
+            const periodToInput = clone.querySelector('[data-field="periodTo"]');
+            if (periodToInput) periodToInput.value = item.periodTo;
+
+            const daysInput = clone.querySelector('[data-field="days"]');
+            if (daysInput) daysInput.value = item.days;
+
+            const hoursPerDayInput = clone.querySelector('[data-field="hoursPerDay"]');
+            if (hoursPerDayInput) hoursPerDayInput.value = item.hoursPerDay;
+
+            const qtyInput = clone.querySelector('[data-field="quantity"]');
+            if (qtyInput) qtyInput.value = item.quantity;
+
+            const rateInput = clone.querySelector('[data-field="rate"]');
+            if (rateInput) rateInput.value = item.rate;
+
+            const amountInput = clone.querySelector('[data-field="amount"]');
+            if (amountInput) amountInput.value = item.amount;
+
+            container.appendChild(clone);
+          });
+        } catch (error) {
+          console.error('Error rendering line items:', error);
+        }
+      }
+
+      buildPreview() {
+        try {
+          Utils.setAccentColor(Utils.$(CONFIG.SELECTORS.color).value);
+
+          const currency = Utils.$(CONFIG.SELECTORS.currency).value;
+          const subtotal = this.state.getSubtotal();
+          const taxPct = parseFloat(Utils.$(CONFIG.SELECTORS.tax).value || 0);
+          const tax = subtotal * (taxPct / 100);
+          const discount = parseFloat(Utils.$(CONFIG.SELECTORS.discount).value || 0);
+      const total = Math.max(0, subtotal + tax - discount);
+
+          const template = document.getElementById('tpl-invoice');
+          if (!template) {
+            console.error('Invoice template not found');
+            return;
+          }
+
+          const invoice = document.importNode(template.content, true);
+
+          // Header
+          const pNum = invoice.getElementById('p_num');
+          if (pNum) pNum.textContent = Utils.$(CONFIG.SELECTORS.number).value || 'INV-0001';
+
+          const pDate = invoice.getElementById('p_date');
+          if (pDate) pDate.textContent = Utils.$(CONFIG.SELECTORS.date).value || Utils.getTodayISO();
+
+          const pDue = invoice.getElementById('p_due');
+          if (pDue) pDue.textContent = Utils.$(CONFIG.SELECTORS.due).value || Utils.getTodayISO();
+
+          // Parties
+          const pFrom = invoice.getElementById('p_from');
+          if (pFrom) {
+            pFrom.innerHTML = `${Utils.$(CONFIG.SELECTORS.freelancer).value}<br/><span class="muted">${Utils.$(CONFIG.SELECTORS.email).value}</span>`;
+          }
+
+          const pTo = invoice.getElementById('p_to');
+          if (pTo) pTo.textContent = Utils.$(CONFIG.SELECTORS.client).value || 'Client Name';
+
+          // Line items table
+          const tbody = invoice.getElementById('p_items');
+          if (tbody) {
+            this.state.lineItems.forEach(item => {
+              const tr = document.createElement('tr');
+              const days = item.days ? item.days : '—';
+              const hours = item.quantity ? item.quantity : '—';
+              
+              // Format period
+              let period = '—';
+              if (item.periodFrom && item.periodTo) {
+                period = `${item.periodFrom} to ${item.periodTo}`;
+              } else if (item.periodFrom) {
+                period = `From ${item.periodFrom}`;
+              } else if (item.periodTo) {
+                period = `Until ${item.periodTo}`;
+              }
+              
+              tr.innerHTML = `
+                <td>${item.description || '—'}</td>
+                <td style="white-space: nowrap;">${period}</td>
+                <td class="right">${days}</td>
+                <td class="right">${hours}</td>
+                <td class="right">${Utils.formatMoney(item.rate, currency)}</td>
+                <td class="right currency">${Utils.formatMoney(item.amount, currency)}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+
+          // Totals
+          const pSubtotal = invoice.getElementById('p_subtotal');
+          if (pSubtotal) pSubtotal.textContent = Utils.formatMoney(subtotal, currency);
+
+          const taxRow = invoice.getElementById('p_tax_row');
+          const pTax = invoice.getElementById('p_tax');
+          if (taxRow && pTax) {
+            if (taxPct > 0) {
+              taxRow.style.display = 'flex';
+              pTax.textContent = `${taxPct}% (${Utils.formatMoney(tax, currency)})`;
+            } else {
+              taxRow.style.display = 'none';
+            }
+          }
+
+          const discountRow = invoice.getElementById('p_discount_row');
+          const pDiscount = invoice.getElementById('p_discount');
+          if (discountRow && pDiscount) {
+            if (discount > 0) {
+              discountRow.style.display = 'flex';
+              pDiscount.textContent = Utils.formatMoney(discount, currency);
+            } else {
+              discountRow.style.display = 'none';
+            }
+          }
+
+          const pTotal = invoice.getElementById('p_total');
+          if (pTotal) pTotal.textContent = Utils.formatMoney(total, currency);
+
+          // Notes
+          const noteText = Utils.$(CONFIG.SELECTORS.note).value.trim();
+          const noteWrap = invoice.getElementById('p_note_wrap');
+          if (noteWrap) {
+            if (noteText) {
+              noteWrap.style.display = 'block';
+              noteWrap.textContent = noteText;
+            } else {
+              noteWrap.style.display = 'none';
+            }
+          }
+
+          // Render
+          const previewEl = Utils.$(CONFIG.SELECTORS.preview);
+          if (previewEl) {
+            previewEl.innerHTML = '';
+            previewEl.appendChild(invoice);
+          }
+        } catch (error) {
+          console.error('Error building preview:', error);
+        }
+      }
+
+      print() {
+        this.buildPreview();
+        this.updateDocumentTitle();
+        setTimeout(() => window.print(), 30);
+      }
+
+      updateDocumentTitle() {
+        // Get the first line item's period dates
+        const firstItem = this.state.lineItems[0];
+        let filename = 'Invoice';
+        
+        if (firstItem && firstItem.periodFrom && firstItem.periodTo) {
+          filename = `Invoice_${firstItem.periodFrom}_to_${firstItem.periodTo}`;
+        } else if (firstItem && firstItem.periodFrom) {
+          filename = `Invoice_from_${firstItem.periodFrom}`;
+        } else if (firstItem && firstItem.periodTo) {
+          filename = `Invoice_to_${firstItem.periodTo}`;
+        } else {
+          // Fallback to invoice dates if no period is set
+          const invoiceDate = Utils.$(CONFIG.SELECTORS.date).value;
+          const dueDate = Utils.$(CONFIG.SELECTORS.due).value;
+          if (invoiceDate && dueDate) {
+            filename = `Invoice_${invoiceDate}_to_${dueDate}`;
+          } else if (invoiceDate) {
+            filename = `Invoice_${invoiceDate}`;
+          } else {
+            // Use invoice number as final fallback
+            const invoiceNum = Utils.$(CONFIG.SELECTORS.number).value || '0001';
+            filename = `Invoice_${invoiceNum}`;
+          }
+        }
+        
+        document.title = filename;
+      }
+    }
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      const state = new InvoiceState();
+      new InvoiceBuilder(state);
+    });
+  </script>
+</body>
+</html>
+
+
+
