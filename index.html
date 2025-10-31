@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Invoicer – Professional Invoice Generator</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='70' font-family='Arial, sans-serif' font-size='48' font-weight='900' fill='%23ffffff' text-anchor='middle' letter-spacing='-4'%3EIN%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
       --ink: #1e293b;        /* slate-800 */
@@ -401,15 +402,23 @@
     }
 
     .brand-badge {
-      width: 50px;
-      height: 50px;
+      width: 56px;
+      height: 56px;
       border-radius: 14px;
       background: var(--accent);
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #fff;
       font-weight: 900;
-      font-size: 18px;
+      font-size: 20px;
+      letter-spacing: -1px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .brand-badge svg {
+      width: 40px;
+      height: 40px;
     }
 
     .brand-title {
@@ -672,6 +681,12 @@
         page-break-inside: avoid;
       }
 
+      /* Ensure logo prints correctly */
+      .brand-badge svg {
+        color: white !important;
+        stroke: white !important;
+      }
+
       /* Footer positioning for print */
       .invoice-footer {
         position: fixed !important;
@@ -694,7 +709,7 @@
     <div class="card inputs">
       <div class="hd">
         <div>Invoicer</div>
-        <div class="muted" style="font-weight: 600; font-size: 12px;">v1.0</div>
+        <div style="font-weight: 600; font-size: 12px; color: white; opacity: 0.9;">v1.0</div>
       </div>
       <div class="bd">
         <!-- Basic Info -->
@@ -713,7 +728,7 @@
         <div class="row">
           <div>
             <label>Client Name</label>
-            <input id="in_client" placeholder="Client name" value="Mini Studio Inc" />
+            <input id="in_client" placeholder="Client name" value="Company Name" />
           </div>
             <div>
             <label>Invoice Number</label>
@@ -818,7 +833,11 @@
       <!-- Header -->
       <div class="inv-header">
         <div class="brand">
-          <div class="brand-badge" id="p_badge">IN</div>
+          <div class="brand-badge" id="p_badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="40" height="40">
+              <text x="30" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="900" fill="currentColor" text-anchor="middle" letter-spacing="-2">IN</text>
+            </svg>
+          </div>
           <div class="brand-title">INVOICER</div>
         </div>
         <div class="meta">
