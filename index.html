@@ -583,7 +583,7 @@
       background: white;
       border: none;
       border-radius: 8px;
-      padding: 24px 16px;
+      padding: 40px 32px 80px 32px;
       width: 100%;
       max-width: 100%;
       min-height: auto;
@@ -593,18 +593,20 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      display: flex;
+      flex-direction: column;
     }
 
     @media (min-width: 768px) {
       .sheet {
         border-radius: 12px;
-        padding: 32px 24px;
+        padding: 48px 40px 100px 40px;
       }
     }
 
     @media (min-width: 1024px) {
       .sheet {
-        padding: 48px 56px;
+        padding: 60px 60px 120px 60px;
         width: 210mm;
         min-height: 297mm;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -614,10 +616,10 @@
     .inv-header {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid var(--line);
+      gap: 24px;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid var(--line);
     }
 
     @media (min-width: 768px) {
@@ -625,8 +627,8 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 28px;
-        padding-bottom: 18px;
+        margin-bottom: 48px;
+        padding-bottom: 28px;
       }
     }
 
@@ -637,35 +639,45 @@
     }
 
     .brand-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 14px;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
       background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
       font-weight: 900;
-      font-size: 20px;
+      font-size: 22px;
       letter-spacing: -1px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
 
     .brand-badge svg {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
     }
 
     .brand-title {
       font-weight: 900;
-      font-size: 24px;
+      font-size: 26px;
       color: var(--accent-ink);
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
     }
 
     @media (min-width: 768px) {
+      .brand-badge {
+        width: 72px;
+        height: 72px;
+      }
+
+      .brand-badge svg {
+        width: 48px;
+        height: 48px;
+      }
+
       .brand-title {
-        font-size: 28px;
+        font-size: 32px;
       }
     }
 
@@ -684,21 +696,38 @@
     .meta .rowx {
       display: flex;
       border-bottom: 1px solid var(--line);
-      padding: 8px 0;
+      padding: 12px 0;
     }
 
     .meta .rowx > div:first-child {
       width: 45%;
       font-weight: 700;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .meta .rowx > div:last-child {
       flex: 1;
       text-align: right;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--ink);
+      font-size: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .meta .rowx {
+        padding: 14px 0;
+      }
+
+      .meta .rowx > div:first-child {
+        font-size: 14px;
+      }
+
+      .meta .rowx > div:last-child {
+        font-size: 16px;
+      }
     }
 
     .meta .rowx:last-child {
@@ -708,31 +737,47 @@
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin: 22px 0;
+      gap: 24px;
+      margin: 32px 0 40px 0;
     }
 
     .panel {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
       background: #fafbff;
     }
 
     .panel .title {
       font-weight: 800;
-      color: #0b1220;
-      margin-bottom: 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       color: var(--muted);
+      margin-bottom: 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
     }
 
     .panel .content {
       font-weight: 600;
       line-height: 1.8;
       color: var(--ink);
+      font-size: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .panel {
+        padding: 24px;
+      }
+
+      .panel .title {
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+
+      .panel .content {
+        font-size: 15px;
+        line-height: 1.9;
+      }
     }
 
     /* Table wrapper for mobile scroll */
@@ -747,35 +792,31 @@
       min-width: 600px;
       border-collapse: separate;
       border-spacing: 0;
-      border: 1px solid var(--line);
+      border: 2px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
       font-size: 13px;
+      margin: 32px 0;
     }
 
     @media (min-width: 768px) {
       table {
         min-width: 100%;
-      }
-    }
-
-    @media (min-width: 768px) {
-      table {
         border-radius: 14px;
-        margin: 22px 0;
+        margin: 40px 0;
         font-size: 14px;
       }
     }
 
     th, td {
-      padding: 10px 8px;
+      padding: 14px 12px;
       border-bottom: 1px solid var(--line);
       text-align: left;
     }
 
     @media (min-width: 768px) {
       th, td {
-        padding: 14px;
+        padding: 16px 18px;
       }
     }
 
@@ -814,12 +855,14 @@
     .totals {
       display: flex;
       justify-content: flex-end;
-      margin-top: 20px;
+      margin-top: 32px;
+      margin-bottom: 32px;
     }
 
     @media (min-width: 768px) {
       .totals {
-        margin-top: 28px;
+        margin-top: 40px;
+        margin-bottom: 48px;
       }
     }
 
@@ -877,26 +920,54 @@
     }
 
     .note {
-      margin-top: 18px;
-      margin-bottom: 80px;
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      padding: 12px;
+      margin-top: 32px;
+      margin-bottom: 32px;
+      border: 2px dashed var(--line);
+      border-radius: 14px;
+      padding: 20px;
       color: var(--muted);
       background: #fafbff;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.8;
+    }
+
+    @media (min-width: 768px) {
+      .note {
+        margin-top: 40px;
+        margin-bottom: 40px;
+        padding: 24px;
+        font-size: 14px;
+      }
     }
 
     .invoice-footer {
-      margin-top: auto;
+      margin-top: 60px;
+      padding: 32px 0 0 0;
+      border-top: 3px solid var(--line);
+      text-align: center;
     }
 
-    /* Ensure content doesn't overlap footer */
-    .sheet > div {
-      position: relative;
-      min-height: 100%;
-      padding-bottom: 80px;
+    .invoice-footer p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .invoice-footer span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    @media (min-width: 768px) {
+      .invoice-footer {
+        margin-top: 80px;
+        padding: 36px 0 0 0;
+      }
+
+      .invoice-footer p {
+        font-size: 14px;
+      }
     }
 
     .empty-state {
@@ -1000,18 +1071,248 @@
         stroke: white !important;
       }
 
-      /* Footer positioning for print */
+      /* Footer for print */
       .invoice-footer {
-        position: fixed !important;
-        bottom: 15mm !important;
-        left: 20mm !important;
-        right: 20mm !important;
-        width: calc(210mm - 40mm) !important;
+        margin-top: 60px !important;
+        padding-top: 32px !important;
+        border-top: 3px solid var(--line) !important;
+        page-break-before: avoid;
       }
 
-      /* Add space for footer */
-      .sheet > div {
-        padding-bottom: 100px !important;
+      /* Hide modal in print */
+      .modal {
+        display: none !important;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease-out;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 32px;
+      border-bottom: 2px solid var(--line);
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--ink);
+    }
+
+    .modal-body {
+      padding: 32px;
+    }
+
+    .modal-description {
+      margin: 0 0 24px 0;
+      color: var(--ink-light);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .modal-input-group {
+      margin-bottom: 16px;
+    }
+
+    .modal-input-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+
+    .modal-input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.1);
+    }
+
+    .modal-error {
+      padding: 12px 16px;
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+      border-radius: 10px;
+      color: #991b1b;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      padding: 24px 32px 32px 32px;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--ink);
+      border: 2px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: var(--line-light);
+      border-color: var(--muted);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary span {
+      font-size: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .modal-content {
+        border-radius: 16px;
+        max-width: 100%;
+      }
+
+      .modal-header {
+        padding: 20px 24px;
+      }
+
+      .modal-header h3 {
+        font-size: 19px;
+      }
+
+      .modal-body {
+        padding: 24px;
+      }
+
+      .modal-footer {
+        padding: 20px 24px 24px 24px;
+        flex-direction: column-reverse;
+      }
+
+      .btn-secondary,
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -1038,31 +1339,25 @@
           </div>
         </div>
 
-        <div class="row">
-          <div>
-            <label>Client Name</label>
-            <input id="in_client" placeholder="Client name" value="Company Name" />
-          </div>
-            <div>
-            <label>Client Email</label>
-            <input id="in_client_email" type="email" placeholder="client@example.com" value="" />
-            </div>
+        <div class="row-full">
+          <label>Client Name</label>
+          <input id="in_client" placeholder="Client name" value="Company Name" />
         </div>
 
         <div class="row">
-            <div>
+          <div>
             <label>Invoice Number</label>
             <input id="in_number" placeholder="INV-0001" value="0001" />
-            </div>
-          <div>
+          </div>
+            <div>
             <label>Payment Terms</label>
             <select id="in_payment_terms">
               <option value="net30">Net 30</option>
               <option value="net15">Net 15</option>
               <option value="due_on_receipt" selected>Due on Receipt</option>
             </select>
-          </div>
-        </div>
+            </div>
+            </div>
 
         <div class="row">
           <div>
@@ -1156,9 +1451,9 @@
             📨 How to Send Invoice:
           </p>
           <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--ink-light); line-height: 1.8;">
-            <li>Click <strong>"Connect Gmail"</strong> to authorize</li>
-            <li>Enter client email address</li>
+            <li>Click <strong>"Connect Gmail"</strong> to authorize (one-time)</li>
             <li>Click <strong>"Send via Gmail"</strong></li>
+            <li>Enter client email in the popup</li>
             <li>PDF attaches automatically and sends! ✓</li>
           </ol>
         </div>
@@ -1174,6 +1469,35 @@
             <p>Loading preview...</p>
         </div>
       </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div id="emailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📧 Send Invoice via Gmail</h3>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Enter the client's email address to send the invoice:</p>
+        <div class="modal-input-group">
+          <label for="modal_client_email">Client Email Address</label>
+          <input 
+            type="email" 
+            id="modal_client_email" 
+            placeholder="client@example.com" 
+            autocomplete="email"
+          />
+        </div>
+        <div id="modal_error" class="modal-error" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelEmailBtn" class="btn-secondary">Cancel</button>
+        <button id="confirmSendBtn" class="btn-primary">
+          <span>✉</span> Send Invoice
+        </button>
       </div>
     </div>
   </div>
@@ -1243,9 +1567,9 @@
       <div class="note" id="p_note_wrap" style="display: none;"></div>
 
       <!-- Footer -->
-      <div class="invoice-footer" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 0; border-top: 2px solid var(--line); text-align: center; background: white;">
-        <p style="margin: 0; font-size: 12px; color: var(--muted); font-weight: 600;">
-          Powered by <span style="color: var(--accent); font-weight: 700;">Invoicer</span>
+      <div class="invoice-footer">
+        <p>
+          Powered by <span>Invoicer</span>
         </p>
       </div>
     </div>
@@ -1506,10 +1830,36 @@
         if (printTopBtn) printTopBtn.addEventListener('click', () => this.print());
 
         const sendEmailBtn = Utils.$(CONFIG.SELECTORS.sendEmailBtn);
-        if (sendEmailBtn) sendEmailBtn.addEventListener('click', () => this.sendEmail());
+        if (sendEmailBtn) sendEmailBtn.addEventListener('click', () => this.showEmailModal());
 
         const connectGmailBtn = Utils.$(CONFIG.SELECTORS.connectGmailBtn);
         if (connectGmailBtn) connectGmailBtn.addEventListener('click', () => this.connectGmail());
+
+        // Modal event listeners
+        const closeModalBtn = document.getElementById('closeModal');
+        if (closeModalBtn) closeModalBtn.addEventListener('click', () => this.closeEmailModal());
+
+        const cancelEmailBtn = document.getElementById('cancelEmailBtn');
+        if (cancelEmailBtn) cancelEmailBtn.addEventListener('click', () => this.closeEmailModal());
+
+        const confirmSendBtn = document.getElementById('confirmSendBtn');
+        if (confirmSendBtn) confirmSendBtn.addEventListener('click', () => this.confirmSendEmail());
+
+        // Close modal on outside click
+        const emailModal = document.getElementById('emailModal');
+        if (emailModal) {
+          emailModal.addEventListener('click', (e) => {
+            if (e.target === emailModal) this.closeEmailModal();
+          });
+        }
+
+        // Submit on Enter key in email input
+        const modalEmailInput = document.getElementById('modal_client_email');
+        if (modalEmailInput) {
+          modalEmailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.confirmSendEmail();
+          });
+        }
 
         // Delegate line item events
         const container = Utils.$(CONFIG.SELECTORS.lineItemsContainer);
@@ -1745,6 +2095,83 @@
         setTimeout(() => window.print(), 30);
       }
 
+      showEmailModal() {
+        const modal = document.getElementById('emailModal');
+        const emailInput = document.getElementById('modal_client_email');
+        const errorDiv = document.getElementById('modal_error');
+        
+        // Clear previous input and errors
+        if (emailInput) emailInput.value = '';
+        if (errorDiv) errorDiv.style.display = 'none';
+        
+        // Show modal
+        if (modal) {
+          modal.classList.add('show');
+          // Focus on input after animation
+          setTimeout(() => {
+            if (emailInput) emailInput.focus();
+          }, 100);
+        }
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+      }
+
+      closeEmailModal() {
+        const modal = document.getElementById('emailModal');
+        if (modal) {
+          modal.classList.remove('show');
+        }
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+      }
+
+      validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      showModalError(message) {
+        const errorDiv = document.getElementById('modal_error');
+        if (errorDiv) {
+          errorDiv.textContent = message;
+          errorDiv.style.display = 'block';
+        }
+      }
+
+      hideModalError() {
+        const errorDiv = document.getElementById('modal_error');
+        if (errorDiv) {
+          errorDiv.style.display = 'none';
+        }
+      }
+
+      confirmSendEmail() {
+        const emailInput = document.getElementById('modal_client_email');
+        const email = emailInput ? emailInput.value.trim() : '';
+        
+        // Hide previous errors
+        this.hideModalError();
+        
+        // Validate email
+        if (!email) {
+          this.showModalError('Please enter an email address');
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        
+        if (!this.validateEmail(email)) {
+          this.showModalError('Please enter a valid email address');
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        
+        // Close modal and send email
+        this.closeEmailModal();
+        this.sendEmail(email);
+      }
+
       connectGmail() {
         if (!GMAIL_CONFIG.CLIENT_ID || GMAIL_CONFIG.CLIENT_ID === 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com') {
           alert('⚠️ Gmail API Not Configured\n\nTo enable direct PDF email attachment:\n\n1. Go to https://console.cloud.google.com\n2. Create a project and enable Gmail API\n3. Create OAuth 2.0 Client ID\n4. Replace CLIENT_ID in the code\n\nFor now, I\'ll use the simple method (PDF downloads, you attach manually).');
@@ -1812,24 +2239,17 @@
         }
       }
 
-      async sendEmail() {
+      async sendEmail(clientEmail) {
         this.buildPreview();
         
-        const clientEmail = Utils.$(CONFIG.SELECTORS.clientEmail).value;
         const clientName = Utils.$(CONFIG.SELECTORS.client).value;
         const invoiceNumber = Utils.$(CONFIG.SELECTORS.number).value;
         const freelancerName = Utils.$(CONFIG.SELECTORS.freelancer).value;
         const dueDate = Utils.$(CONFIG.SELECTORS.due).value;
-        
-        if (!clientEmail) {
-          alert('Please enter the client email address before sending.');
-          Utils.$(CONFIG.SELECTORS.clientEmail).focus();
-          return;
-        }
 
         // If Gmail not connected, use simple mailto method
         if (!gmailAuthorized || !gmailAccessToken) {
-          await this.sendEmailSimple();
+          await this.sendEmailSimple(clientEmail);
           return;
         }
 
@@ -1977,10 +2397,9 @@ ${freelancerName}`;
         }
       }
 
-      async sendEmailSimple() {
+      async sendEmailSimple(clientEmail) {
         this.buildPreview();
         
-        const clientEmail = Utils.$(CONFIG.SELECTORS.clientEmail).value;
         const clientName = Utils.$(CONFIG.SELECTORS.client).value;
         const invoiceNumber = Utils.$(CONFIG.SELECTORS.number).value;
         const freelancerName = Utils.$(CONFIG.SELECTORS.freelancer).value;
