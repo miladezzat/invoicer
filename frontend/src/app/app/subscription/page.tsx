@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useSubscription } from '@/contexts/subscription-context'
 import { stripeAPI } from '@/lib/api'
+import { AppNavigation } from '@/components/ui/app-navigation'
 import { UserDropdown } from '@/components/ui/user-dropdown'
 import { Button } from '@/components/ui/button'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
@@ -98,31 +99,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1e293b] to-[#334155] flex items-center justify-center text-white font-black text-sm shadow-md group-hover:shadow-lg transition-shadow">
-                IN
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Invoicer</span>
-            </Link>
-            <div className="flex items-center gap-3">
-              <Link href="/app/invoices">
-                <Button variant="outline" size="sm" className="hidden sm:flex">My Invoices</Button>
-              </Link>
-              <Link href="/builder" className="hidden md:block">
-                <Button className="gap-2 shadow-sm" size="sm">
-                  <Plus className="h-4 w-4" />
-                  New Invoice
-                </Button>
-              </Link>
-              <UserDropdown />
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppNavigation />
 
       <div className="container mx-auto px-4 py-8 sm:py-12 max-w-5xl">
         {/* Page Header */}

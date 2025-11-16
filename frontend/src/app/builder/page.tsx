@@ -1,14 +1,15 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useInvoiceBuilder } from '@/store/invoice-builder'
 import { InvoiceBuilderForm } from '@/components/invoice/builder-form'
 import { InvoicePreview } from '@/components/invoice/invoice-preview'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { UpgradeModal } from '@/components/ui/upgrade-modal'
 import { EmailModal } from '@/components/ui/email-modal'
-import { FileText, Save, Share2, Printer, Plus, Mail } from 'lucide-react'
+import { FileText, Save, Share2, Printer, Plus, Mail, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/auth-context'
 import { UserDropdown } from '@/components/ui/user-dropdown'
@@ -29,6 +30,44 @@ function BuilderContent() {
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved')
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
+  const previousInvoiceRef = useRef<string>()
+  
+  // Check if invoice is read-only (paid invoices cannot be edited)
+  const isReadOnly = currentInvoice?.status === 'paid'
+
+  // Auto-save functionality (only for authenticated users with existing invoices)
+  useEffect(() => {
+    if (!isAuthenticated || !invoiceId || !currentInvoice || isReadOnly) return
+
+    const currentInvoiceString = JSON.stringify(currentInvoice)
+    
+    // Skip if invoice hasn't changed
+    if (previousInvoiceRef.current === currentInvoiceString) return
+    
+    previousInvoiceRef.current = currentInvoiceString
+    setSaveStatus('unsaved')
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    // Set new auto-save timeout (5 seconds)
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      handleSave(true) // Pass true to indicate auto-save
+    }, 5000)
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current)
+      }
+    }
+  }, [currentInvoice, isAuthenticated, invoiceId])
 
   // Initialize new invoice or load client data
   useEffect(() => {
@@ -156,25 +195,34 @@ function BuilderContent() {
     }
   }, [invoiceId, isAuthenticated])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async (isAutoSave = false) => {
     if (!currentInvoice) return
     
     if (!isAuthenticated) {
       // Save locally for guest users
       saveInvoice()
-      toast({
-        title: 'Saved locally',
-        description: 'Invoice saved locally! Sign up to save to the cloud.',
-      })
-    } else {
+      if (!isAutoSave) {
+        toast({
+          title: 'Saved locally',
+          description: 'Invoice saved locally! Sign up to save to the cloud.',
+        })
+      }
+      setSaveStatus('saved')
+      return
+    }
+    
+    setIsSaving(true)
+    setSaveStatus('saving')
+    
+    // Rest of authenticated save logic
+    try {
       // Check if user has permission to save invoices
       if (!hasFeature(Feature.SAVE_INVOICE)) {
         setShowUpgradeModal(true)
+        setIsSaving(false)
+        setSaveStatus('unsaved')
         return
       }
-      
-      // Save to backend for authenticated users
-      try {
         // Prepare invoice data - remove frontend-specific and calculated fields
         const invoiceToSave = currentInvoice
         const { 
@@ -233,14 +281,17 @@ function BuilderContent() {
             id: savedInvoice._id?.toString() || savedInvoice.id,
             number: savedInvoice.number,
           })
-          toast({
-            title: 'Invoice saved!',
-            description: `Invoice ${savedInvoice.number} has been saved successfully.`,
-          })
+          if (!isAutoSave) {
+            toast({
+              title: 'Invoice saved!',
+              description: `Invoice ${savedInvoice.number} has been saved successfully.`,
+            })
+          }
         }
         
         console.log('Backend response:', response.data)
         saveInvoice() // Also save locally
+        setSaveStatus('saved')
       } catch (error: any) {
         console.error('Save error:', error)
         let errorMessage = 'Failed to save invoice. Please try again.'
@@ -263,9 +314,11 @@ function BuilderContent() {
           description: errorMessage,
           variant: 'destructive',
         })
+        setSaveStatus('unsaved')
+      } finally {
+        setIsSaving(false)
       }
-    }
-  }
+  }, [currentInvoice, isAuthenticated, hasFeature, invoiceId, toast, updateInvoice, saveInvoice, setShowUpgradeModal, setSaveStatus, setIsSaving])
 
   const handlePrint = () => {
     window.print()
@@ -326,6 +379,7 @@ function BuilderContent() {
       return
     }
 
+    setIsSharing(true)
     try {
       const response = await invoicesAPI.enablePublicLink(invoiceId)
       const token = response.data.token
@@ -345,6 +399,8 @@ function BuilderContent() {
         description: error.response?.data?.message || 'Failed to generate shareable link.',
         variant: 'destructive',
       })
+    } finally {
+      setIsSharing(false)
     }
   }
 
@@ -352,11 +408,26 @@ function BuilderContent() {
     // Clear URL parameters and create new invoice
     window.history.pushState({}, '', '/builder')
     createNewInvoice()
+    setSaveStatus('saved')
     toast({
       title: 'New invoice',
       description: 'Started a new invoice.',
     })
   }
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + S to save
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault()
+        handleSave()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleSave])
 
   if (!currentInvoice || isLoadingInvoice) {
     return (
@@ -375,12 +446,35 @@ function BuilderContent() {
       <header className="border-b bg-card no-print">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <Link href={isAuthenticated ? "/app/invoices" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-lg bg-[#1e293b] flex items-center justify-center text-white font-black text-sm">
-                IN
-              </div>
-              <span className="text-xl font-bold">Invoicer</span>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href={isAuthenticated ? "/app/invoices" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="w-8 h-8 rounded-lg bg-[#1e293b] flex items-center justify-center text-white font-black text-sm">
+                  IN
+                </div>
+                <span className="text-xl font-bold">Invoicer</span>
+              </Link>
+              
+              {/* Save Status Indicator */}
+              {isAuthenticated && invoiceId && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  {saveStatus === 'saving' && (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                      <span className="text-muted-foreground">Saving...</span>
+                    </>
+                  )}
+                  {saveStatus === 'saved' && (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                      <span className="text-green-600 font-medium">Saved</span>
+                    </>
+                  )}
+                  {saveStatus === 'unsaved' && (
+                    <Badge variant="warning" className="text-xs">Unsaved changes</Badge>
+                  )}
+                </div>
+              )}
+            </div>
             
             {/* Desktop & Tablet Actions */}
             <div className="hidden md:flex items-center gap-2 flex-wrap">
@@ -390,7 +484,14 @@ function BuilderContent() {
                   New
                 </Button>
               )}
-              <Button variant="outline" size="sm" onClick={handleSave} className="gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleSave()} 
+                isLoading={isSaving}
+                disabled={isSaving}
+                className="gap-2"
+              >
                 <Save className="h-4 w-4" />
                 Save
               </Button>
@@ -398,14 +499,21 @@ function BuilderContent() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => setShowEmailModal(true)} 
+                  onClick={() => setShowEmailModal(true)}
+                  isLoading={isSendingEmail}
                   className="gap-2 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
                 >
                   <Mail className="h-4 w-4" />
                   Send Email
                 </Button>
               )}
-              <Button variant="outline" size="sm" onClick={handleShare} className="gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleShare}
+                isLoading={isSharing}
+                className="gap-2"
+              >
                 <Share2 className="h-4 w-4" />
                 Share
               </Button>
@@ -441,7 +549,13 @@ function BuilderContent() {
                   <span className="hidden xs:inline">New</span>
                 </Button>
               )}
-              <Button variant="outline" size="sm" onClick={handleSave} className="gap-1 flex-1">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleSave()}
+                isLoading={isSaving}
+                className="gap-1 flex-1"
+              >
                 <Save className="h-4 w-4" />
                 <span className="hidden xs:inline">Save</span>
               </Button>
@@ -488,7 +602,21 @@ function BuilderContent() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left: Form */}
           <div className="no-print">
-            <InvoiceBuilderForm />
+            {/* Read-Only Warning Banner */}
+            {isReadOnly && (
+              <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl shadow-sm">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-bold text-green-900 mb-1">Invoice Paid - Read Only Mode</h3>
+                    <p className="text-sm text-green-700">
+                      This invoice has been marked as paid and cannot be edited. All fields are locked to preserve the payment record.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <InvoiceBuilderForm readOnly={isReadOnly} />
           </div>
 
           {/* Right: Preview */}

@@ -27,9 +27,10 @@ interface ClientSelectorProps {
   }
   onSelect: (client: Client | null) => void
   onManualInput?: (name: string) => void
+  disabled?: boolean
 }
 
-export function ClientSelector({ selectedClient, onSelect, onManualInput }: ClientSelectorProps) {
+export function ClientSelector({ selectedClient, onSelect, onManualInput, disabled = false }: ClientSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(false)
@@ -119,6 +120,7 @@ export function ClientSelector({ selectedClient, onSelect, onManualInput }: Clie
             variant="ghost"
             size="sm"
             onClick={handleSearchMode}
+            disabled={disabled}
             className="h-6 text-xs"
           >
             <Search className="h-3 w-3 mr-1" />
@@ -130,6 +132,7 @@ export function ClientSelector({ selectedClient, onSelect, onManualInput }: Clie
           value={selectedClient?.name || ''}
           onChange={(e) => onManualInput?.(e.target.value)}
           placeholder="Enter client name manually"
+          disabled={disabled}
         />
       </div>
     )
@@ -144,6 +147,7 @@ export function ClientSelector({ selectedClient, onSelect, onManualInput }: Clie
           variant="ghost"
           size="sm"
           onClick={handleManualMode}
+          disabled={disabled}
           className="h-6 text-xs"
         >
           Enter Manually
@@ -157,11 +161,12 @@ export function ClientSelector({ selectedClient, onSelect, onManualInput }: Clie
           id="clientSearch"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => setShowDropdown(true)}
+          onFocus={() => !disabled && setShowDropdown(true)}
           placeholder={selectedClient?.name || "Search or select a client..."}
+          disabled={disabled}
           className="pl-10 pr-10"
         />
-        {(searchQuery || selectedClient?.id) && (
+        {(searchQuery || selectedClient?.id) && !disabled && (
           <button
             type="button"
             onClick={handleClearSelection}

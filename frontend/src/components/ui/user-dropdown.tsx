@@ -2,11 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { User, CreditCard, LogOut, ChevronDown } from 'lucide-react'
+import { User, CreditCard, LogOut, ChevronDown, Code } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { useFeatures } from '@/contexts/features-context'
+import { Feature } from '@/contexts/features-context'
 
 export function UserDropdown() {
   const { user, logout } = useAuth()
+  const { hasFeature } = useFeatures()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -73,6 +76,17 @@ export function UserDropdown() {
                 <CreditCard className="h-4 w-4 text-slate-500" />
                 <span>Subscription</span>
               </Link>
+
+              {hasFeature(Feature.API_ACCESS) && (
+                <Link
+                  href="/app/developer"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors text-slate-700"
+                >
+                  <Code className="h-4 w-4 text-slate-500" />
+                  <span>Developer</span>
+                </Link>
+              )}
 
               <div className="h-px bg-slate-200 my-1" />
 

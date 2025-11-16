@@ -5,14 +5,15 @@ import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Select } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { UpgradeModal } from '@/components/ui/upgrade-modal'
 import { Plus, FileText, Trash2, Eye, MoreVertical, Edit, Share2, User, CreditCard, Settings, X, BarChart3, Search, Filter, Download, Copy, TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, ArrowUpDown, Calendar } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { ProtectedRoute } from '@/components/auth/protected-route'
-import { UserDropdown } from '@/components/ui/user-dropdown'
+import { AppNavigation } from '@/components/ui/app-navigation'
 import { invoicesAPI } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import { useFeatures } from '@/contexts/features-context'
@@ -317,152 +318,97 @@ function InvoicesContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3">
-          {/* Desktop Header */}
-          <div className="hidden md:flex items-center justify-between">
-            <Link href="/app/invoices" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-lg bg-[#1e293b] flex items-center justify-center text-white font-black text-sm">
-                IN
-              </div>
-              <span className="text-xl font-bold">Invoicer</span>
-            </Link>
-            <div className="flex items-center gap-3">
-              <Link href="/app/clients">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <User className="h-4 w-4" />
-                  Clients
-                </Button>
-              </Link>
-              {hasFeature(Feature.ANALYTICS) && (
-                <Link href="/app/analytics">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    Analytics
-                  </Button>
-                </Link>
-              )}
-              {hasFeature(Feature.API_ACCESS) && (
-                <Link href="/app/developer">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Settings className="h-4 w-4" />
-                    Developer
-                  </Button>
-                </Link>
-              )}
-              <Link href="/app/settings">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Button>
-              </Link>
-              <Link href="/builder">
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  New Invoice
-                </Button>
-              </Link>
-              <UserDropdown />
-            </div>
-          </div>
-
-          {/* Mobile Header */}
-          <div className="md:hidden">
-            <div className="flex items-center justify-between mb-3">
-              <Link href="/app/invoices" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <div className="w-7 h-7 rounded-lg bg-[#1e293b] flex items-center justify-center text-white font-black text-xs">
-                  IN
-                </div>
-                <span className="text-lg font-bold">Invoicer</span>
-              </Link>
-              <UserDropdown />
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <Link href="/builder" className="flex-1">
-                <Button size="sm" className="gap-1.5 w-full">
-                  <Plus className="h-4 w-4" />
-                  <span>New Invoice</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+      <AppNavigation />
 
       {/* Main Content */}
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header Section */}
-        <div className="mb-4 sm:mb-8">
-          <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Invoices</h1>
-          <p className="text-xs sm:text-base text-muted-foreground">
-            Manage and track all your invoices
-          </p>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-lg">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-4xl font-bold text-slate-900">Invoices</h1>
+                <p className="text-sm sm:text-base text-slate-600 mt-0.5">
+                  Manage and track all your invoices
+                </p>
+              </div>
+            </div>
+            <Link href="/builder">
+              <Button size="lg" className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all">
+                <Plus className="h-5 w-5" />
+                <span className="hidden sm:inline">New Invoice</span>
+                <span className="sm:hidden">New</span>
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Statistics Cards */}
         {!loading && invoices.length > 0 && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {/* Total Revenue */}
-            <Card className="border-l-4 border-l-blue-500">
-              <CardContent className="p-3 sm:p-6">
+            <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-blue-50/30">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-muted-foreground mb-1 truncate">Total</p>
-                    <h3 className="text-base sm:text-2xl font-bold truncate">${(statistics.total / 1000).toFixed(1)}k</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">{statistics.count} invoices</p>
+                    <p className="text-xs font-semibold text-blue-600 mb-1 truncate uppercase tracking-wider">Total Revenue</p>
+                    <h3 className="text-xl sm:text-3xl font-bold truncate text-slate-900">${(statistics.total / 1000).toFixed(1)}k</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{statistics.count} {statistics.count === 1 ? 'invoice' : 'invoices'}</p>
                   </div>
-                  <div className="p-1.5 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
-                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                  <div className="p-2 sm:p-3 bg-blue-100 rounded-xl shadow-sm flex-shrink-0">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Paid */}
-            <Card className="border-l-4 border-l-green-500">
-              <CardContent className="p-3 sm:p-6">
+            <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-green-50/30">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-muted-foreground mb-1 truncate">Paid</p>
-                    <h3 className="text-base sm:text-2xl font-bold text-green-700 truncate">${(statistics.paid / 1000).toFixed(1)}k</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">{statistics.paidCount} invoices</p>
+                    <p className="text-xs font-semibold text-green-600 mb-1 truncate uppercase tracking-wider">Paid</p>
+                    <h3 className="text-xl sm:text-3xl font-bold text-green-700 truncate">${(statistics.paid / 1000).toFixed(1)}k</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{statistics.paidCount} {statistics.paidCount === 1 ? 'invoice' : 'invoices'}</p>
                   </div>
-                  <div className="p-1.5 sm:p-3 bg-green-100 rounded-lg flex-shrink-0">
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                  <div className="p-2 sm:p-3 bg-green-100 rounded-xl shadow-sm flex-shrink-0">
+                    <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Pending */}
-            <Card className="border-l-4 border-l-yellow-500">
-              <CardContent className="p-3 sm:p-6">
+            <Card className="border-l-4 border-l-yellow-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-yellow-50/30">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-muted-foreground mb-1 truncate">Pending</p>
-                    <h3 className="text-base sm:text-2xl font-bold text-yellow-700 truncate">${(statistics.pending / 1000).toFixed(1)}k</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">{statistics.pendingCount} invoices</p>
+                    <p className="text-xs font-semibold text-yellow-600 mb-1 truncate uppercase tracking-wider">Pending</p>
+                    <h3 className="text-xl sm:text-3xl font-bold text-yellow-700 truncate">${(statistics.pending / 1000).toFixed(1)}k</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{statistics.pendingCount} {statistics.pendingCount === 1 ? 'invoice' : 'invoices'}</p>
                   </div>
-                  <div className="p-1.5 sm:p-3 bg-yellow-100 rounded-lg flex-shrink-0">
-                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />
+                  <div className="p-2 sm:p-3 bg-yellow-100 rounded-xl shadow-sm flex-shrink-0">
+                    <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Overdue */}
-            <Card className="border-l-4 border-l-red-500">
-              <CardContent className="p-3 sm:p-6">
+            <Card className="border-l-4 border-l-red-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-red-50/30">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-muted-foreground mb-1 truncate">Overdue</p>
-                    <h3 className="text-base sm:text-2xl font-bold text-red-700 truncate">${(statistics.overdue / 1000).toFixed(1)}k</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">{statistics.overdueCount} invoices</p>
+                    <p className="text-xs font-semibold text-red-600 mb-1 truncate uppercase tracking-wider">Overdue</p>
+                    <h3 className="text-xl sm:text-3xl font-bold text-red-700 truncate">${(statistics.overdue / 1000).toFixed(1)}k</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{statistics.overdueCount} {statistics.overdueCount === 1 ? 'invoice' : 'invoices'}</p>
                   </div>
-                  <div className="p-1.5 sm:p-3 bg-red-100 rounded-lg flex-shrink-0">
-                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
+                  <div className="p-2 sm:p-3 bg-red-100 rounded-xl shadow-sm flex-shrink-0">
+                    <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
                   </div>
                 </div>
               </CardContent>
@@ -472,161 +418,270 @@ function InvoicesContent() {
 
         {/* Search and Filters */}
         {!loading && invoices.length > 0 && (
-          <Card className="mb-4 sm:mb-6">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex flex-col gap-3">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Card className="mb-6 shadow-lg border-2">
+            <CardContent className="p-0">
+              {/* Search Section */}
+              <div className="p-4 sm:p-6 bg-gradient-to-r from-slate-50 to-blue-50/30">
+                <div className="relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
                   <input
                     type="text"
-                    placeholder="Search invoices..."
+                    placeholder="Search by invoice number, client, or amount..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full pl-12 pr-4 py-3.5 text-base border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white shadow-sm transition-all placeholder:text-slate-400"
                   />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 rounded-lg transition-colors"
+                    >
+                      <X className="h-4 w-4 text-slate-500" />
+                    </button>
+                  )}
                 </div>
+              </div>
 
-                {/* Filters Row */}
-                <div className="flex gap-2">
+              {/* Filters Section */}
+              <div className="p-4 sm:p-6 border-t">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
                   {/* Status Filter */}
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white cursor-pointer"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="draft">Draft</option>
-                    <option value="sent">Sent</option>
-                    <option value="viewed">Viewed</option>
-                    <option value="paid">Paid</option>
-                    <option value="overdue">Overdue</option>
-                    <option value="void">Void</option>
-                  </select>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <Filter className="h-3.5 w-3.5" />
+                      Filter by Status
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full px-4 py-3 text-base border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white cursor-pointer transition-all appearance-none font-medium shadow-sm"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                      >
+                        <option value="all">All Status</option>
+                        <option value="draft">📝 Draft</option>
+                        <option value="sent">📤 Sent</option>
+                        <option value="viewed">👁️ Viewed</option>
+                        <option value="paid">✅ Paid</option>
+                        <option value="overdue">⚠️ Overdue</option>
+                        <option value="void">🚫 Void</option>
+                      </select>
+                    </div>
+                  </div>
 
                   {/* Sort Options */}
-                  <Button
-                    variant={sortBy === 'date' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => toggleSort('date')}
-                    className="gap-1.5 px-3"
-                  >
-                    <Calendar className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Date</span>
-                    {sortBy === 'date' && (
-                      <ArrowUpDown className="h-3 w-3" />
-                    )}
-                  </Button>
-                  <Button
-                    variant={sortBy === 'amount' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => toggleSort('amount')}
-                    className="gap-1.5 px-3"
-                  >
-                    <DollarSign className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Amount</span>
-                    {sortBy === 'amount' && (
-                      <ArrowUpDown className="h-3 w-3" />
-                    )}
-                  </Button>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <ArrowUpDown className="h-3.5 w-3.5" />
+                      Sort By
+                    </label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={sortBy === 'date' ? 'default' : 'outline'}
+                        size="default"
+                        onClick={() => toggleSort('date')}
+                        className={`gap-2 px-6 rounded-xl font-semibold shadow-sm transition-all ${
+                          sortBy === 'date' 
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' 
+                            : 'hover:bg-slate-100 hover:border-slate-300'
+                        }`}
+                      >
+                        <Calendar className="h-4 w-4" />
+                        <span>Date</span>
+                        {sortBy === 'date' && (
+                          <ArrowUpDown className="h-3.5 w-3.5 ml-1" />
+                        )}
+                      </Button>
+                      <Button
+                        variant={sortBy === 'amount' ? 'default' : 'outline'}
+                        size="default"
+                        onClick={() => toggleSort('amount')}
+                        className={`gap-2 px-6 rounded-xl font-semibold shadow-sm transition-all ${
+                          sortBy === 'amount' 
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' 
+                            : 'hover:bg-slate-100 hover:border-slate-300'
+                        }`}
+                      >
+                        <DollarSign className="h-4 w-4" />
+                        <span>Amount</span>
+                        {sortBy === 'amount' && (
+                          <ArrowUpDown className="h-3.5 w-3.5 ml-1" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Active Filters Display */}
               {(searchQuery || statusFilter !== 'all' || clientIdFilter) && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {searchQuery && (
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-sm">
-                      <span>Search: {searchQuery}</span>
-                      <button onClick={() => setSearchQuery('')} className="hover:text-primary">
-                        <X className="h-3 w-3" />
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t bg-blue-50/30">
+                  <div className="pt-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 rounded-lg">
+                        <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                        <span className="text-xs font-bold text-blue-900 uppercase tracking-wider">Active Filters</span>
+                        <Badge className="bg-blue-600 text-white text-xs px-2 py-0.5">
+                          {[searchQuery, statusFilter !== 'all', clientIdFilter].filter(Boolean).length}
+                        </Badge>
+                      </div>
+                      
+                      {searchQuery && (
+                        <Badge className="gap-2 pl-3 pr-2 py-2 bg-white border-2 border-blue-200 text-slate-700 hover:border-blue-400 transition-all">
+                          <Search className="h-3.5 w-3.5 text-blue-600" />
+                          <span className="font-medium">Search: <span className="font-bold">{searchQuery}</span></span>
+                          <button onClick={() => setSearchQuery('')} className="hover:bg-red-100 rounded p-0.5 transition-colors">
+                            <X className="h-3.5 w-3.5 text-red-600" />
+                          </button>
+                        </Badge>
+                      )}
+                      {statusFilter !== 'all' && (
+                        <Badge className="gap-2 pl-3 pr-2 py-2 bg-white border-2 border-green-200 text-slate-700 hover:border-green-400 transition-all">
+                          <Filter className="h-3.5 w-3.5 text-green-600" />
+                          <span className="font-medium">Status: <span className="font-bold capitalize">{statusFilter}</span></span>
+                          <button onClick={() => setStatusFilter('all')} className="hover:bg-red-100 rounded p-0.5 transition-colors">
+                            <X className="h-3.5 w-3.5 text-red-600" />
+                          </button>
+                        </Badge>
+                      )}
+                      {clientIdFilter && clientNameFilter && (
+                        <Badge className="gap-2 pl-3 pr-2 py-2 bg-white border-2 border-purple-200 text-slate-700 hover:border-purple-400 transition-all">
+                          <User className="h-3.5 w-3.5 text-purple-600" />
+                          <span className="font-medium">Client: <span className="font-bold">{decodeURIComponent(clientNameFilter)}</span></span>
+                          <button onClick={clearClientFilter} className="hover:bg-red-100 rounded p-0.5 transition-colors">
+                            <X className="h-3.5 w-3.5 text-red-600" />
+                          </button>
+                        </Badge>
+                      )}
+                      <button
+                        onClick={() => {
+                          setSearchQuery('')
+                          setStatusFilter('all')
+                          if (clientIdFilter) clearClientFilter()
+                        }}
+                        className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors uppercase tracking-wider border-2 border-red-200 hover:border-red-400"
+                      >
+                        Clear All
                       </button>
                     </div>
-                  )}
-                  {statusFilter !== 'all' && (
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-sm">
-                      <span>Status: {statusFilter}</span>
-                      <button onClick={() => setStatusFilter('all')} className="hover:text-primary">
-                        <X className="h-3 w-3" />
-                      </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Results Count and Export */}
+              <div className="px-4 sm:px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 border-t">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <FileText className="h-4 w-4 text-blue-600" />
                     </div>
-                  )}
-              {clientIdFilter && clientNameFilter && (
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-sm">
-                      <User className="h-3 w-3" />
-                      <span>Client: {decodeURIComponent(clientNameFilter)}</span>
-                      <button onClick={clearClientFilter} className="hover:text-primary">
-                        <X className="h-3 w-3" />
-                      </button>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">
+                        <span className="text-blue-600 text-lg">{filteredInvoices.length}</span>
+                        <span className="text-slate-500 mx-1.5">/</span>
+                        <span className="text-slate-600">{invoices.length}</span>
+                      </p>
+                      <p className="text-xs text-slate-500 font-medium">
+                        {filteredInvoices.length === invoices.length ? 'All invoices' : 'Matching results'}
+                      </p>
                     </div>
+                  </div>
+                  {filteredInvoices.length > 0 && (
+                    <Button variant="outline" size="sm" className="gap-2 rounded-xl shadow-sm hover:shadow-md transition-all" disabled>
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline font-semibold">Export</span>
+                    </Button>
                   )}
-                  <button
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="shadow-md">
+          <CardHeader className="pb-4 sm:pb-6 border-b bg-gradient-to-r from-slate-50 to-blue-50/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">
+                  {filteredInvoices.length === invoices.length ? 'All Invoices' : 'Filtered Results'}
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  {filteredInvoices.length === invoices.length 
+                    ? 'Complete list of your invoices' 
+                    : `${filteredInvoices.length} ${filteredInvoices.length === 1 ? 'invoice' : 'invoices'} matching your filters`}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="relative inline-flex">
+                  <div className="animate-spin rounded-full h-20 w-20 border-4 border-slate-200 border-t-primary" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <FileText className="h-8 w-8 text-primary animate-pulse" />
+                  </div>
+                </div>
+                <p className="text-lg font-semibold text-slate-900 mt-6">Loading your invoices...</p>
+                <p className="text-sm text-muted-foreground mt-2">Please wait a moment</p>
+              </div>
+            ) : filteredInvoices.length === 0 && clientIdFilter ? (
+              <div className="text-center py-20 px-4">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 mb-6 shadow-lg">
+                  <FileText className="h-12 w-12 text-blue-600" />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-slate-900">No invoices for {decodeURIComponent(clientNameFilter || 'this client')}</h3>
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto text-base">
+                  This client doesn't have any invoices yet. Create one now to start tracking payments!
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button onClick={clearClientFilter} variant="outline" size="lg" className="gap-2">
+                    <FileText className="h-5 w-5" />
+                    View All Invoices
+                  </Button>
+                  <Link href={`/builder?clientId=${clientIdFilter}`}>
+                    <Button size="lg" className="gap-2 shadow-lg">
+                      <Plus className="h-5 w-5" />
+                      Create Invoice
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : filteredInvoices.length === 0 ? (
+              <div className="text-center py-20 px-4">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 mb-6 shadow-lg animate-bounce">
+                  <FileText className="h-12 w-12 text-blue-600" />
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900">
+                  {invoices.length === 0 ? 'No invoices yet' : 'No matching invoices'}
+                </h3>
+                <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-base sm:text-lg">
+                  {invoices.length === 0 
+                    ? 'Start creating professional invoices in minutes. Your first invoice is just a click away.' 
+                    : 'Try adjusting your filters or search query to find what you\'re looking for.'}
+                </p>
+                {invoices.length === 0 ? (
+                  <Link href="/builder">
+                    <Button size="lg" className="gap-2 shadow-lg px-8 h-12 text-base">
+                      <Plus className="h-5 w-5" />
+                      Create Your First Invoice
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button 
                     onClick={() => {
                       setSearchQuery('')
                       setStatusFilter('all')
                       if (clientIdFilter) clearClientFilter()
                     }}
-                    className="text-sm text-muted-foreground hover:text-primary underline"
+                    variant="outline" 
+                    size="lg" 
+                    className="gap-2 px-8 h-12 text-base"
                   >
-                    Clear all filters
-                  </button>
-                </div>
-              )}
-
-              {/* Results Count */}
-              <div className="mt-3 text-sm text-muted-foreground">
-                Showing {filteredInvoices.length} of {invoices.length} invoices
-            </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card>
-          <CardHeader className="pb-3 sm:pb-6">
-            <CardTitle className="text-lg sm:text-xl">
-              {filteredInvoices.length === invoices.length ? 'All Invoices' : 'Filtered Invoices'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            {loading ? (
-              <div className="text-center py-16">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4" />
-                <p className="text-muted-foreground font-medium">Loading your invoices...</p>
-              </div>
-            ) : filteredInvoices.length === 0 && clientIdFilter ? (
-              <div className="text-center py-16 px-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
-                  <FileText className="h-10 w-10 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">No invoices for {decodeURIComponent(clientNameFilter || 'this client')}</h3>
-                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  This client doesn't have any invoices yet. Create one now!
-                </p>
-                <Button onClick={clearClientFilter} variant="outline" className="mr-2">
-                  View All Invoices
-                </Button>
-                <Link href={`/builder?clientId=${clientIdFilter}`}>
-                  <Button className="gap-2">
-                    <Plus className="h-5 w-5" />
-                    Create Invoice
+                    <X className="h-5 w-5" />
+                    Clear All Filters
                   </Button>
-                </Link>
-              </div>
-            ) : filteredInvoices.length === 0 ? (
-              <div className="text-center py-16 px-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
-                  <FileText className="h-10 w-10 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">No invoices yet</h3>
-                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  Start creating professional invoices in minutes. Your first invoice is just a click away.
-                </p>
-                <Link href="/builder">
-                  <Button size="lg" className="gap-2">
-                    <Plus className="h-5 w-5" />
-                    Create Your First Invoice
-                  </Button>
-                </Link>
+                )}
               </div>
             ) : (
               <div className="space-y-3 sm:space-y-4">
@@ -639,42 +694,40 @@ function InvoicesContent() {
                     key={invoice._id}
                       className={`group transition-all duration-300 ${
                         overdueStatus 
-                          ? 'border-l-4 border-l-red-500 bg-red-50/30' 
-                          : 'hover:shadow-md hover:border-primary/30'
+                          ? 'border-l-4 border-l-red-500 bg-gradient-to-r from-red-50/50 to-white shadow-md' 
+                          : 'hover:shadow-xl hover:border-primary/40 hover:-translate-y-1'
                       }`}
                     >
                       <CardContent className="p-4 sm:p-5">
                         {/* Mobile Layout */}
-                        <div className="sm:hidden space-y-4">
-                          {/* Row 1: Invoice Number + Status */}
+                        <div className="sm:hidden space-y-3">
+                          {/* Header: Invoice Number + Status Badge */}
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h3 
-                                className="font-bold text-base text-foreground mb-1 truncate"
-                    onClick={() => router.push(`/builder?id=${invoice._id}`)}
-                  >
+                                className="font-bold text-lg text-foreground mb-1.5 truncate cursor-pointer hover:text-primary transition-colors"
+                                onClick={() => router.push(`/builder?id=${invoice._id}`)}
+                              >
                                 {invoice.number}
                               </h3>
                               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                                <User className="h-3.5 w-3.5 flex-shrink-0" />
+                                <User className="h-4 w-4 flex-shrink-0" />
                                 <span className="truncate">{invoice.clientName || 'No client'}</span>
                               </div>
                             </div>
                             
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <select
-                                value={invoice.status}
-                                onChange={(e) => handleStatusChange(invoice._id, e.target.value)}
-                                className={`text-xs font-semibold px-2.5 py-1 rounded-full border-0 cursor-pointer ${getStatusColor(invoice.status)}`}
-                              >
-                                <option value="draft">Draft</option>
-                                <option value="sent">Sent</option>
-                                <option value="viewed">Viewed</option>
-                                <option value="paid">Paid</option>
-                                <option value="overdue">Overdue</option>
-                                <option value="void">Void</option>
-                              </select>
-                            </div>
+                            {/* Status Badge (no dropdown) */}
+                            <Badge 
+                              className={`text-xs font-bold px-3 py-1.5 cursor-default ${getStatusColor(invoice.status)}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {invoice.status === 'draft' && '📝 Draft'}
+                              {invoice.status === 'sent' && '📤 Sent'}
+                              {invoice.status === 'viewed' && '👁️ Viewed'}
+                              {invoice.status === 'paid' && '✅ Paid'}
+                              {invoice.status === 'overdue' && '⚠️ Overdue'}
+                              {invoice.status === 'void' && '🚫 Void'}
+                            </Badge>
                           </div>
 
                           {/* Row 2: Overdue Warning (if applicable) */}
@@ -720,29 +773,27 @@ function InvoicesContent() {
                             )}
                           </div>
 
-                          {/* Row 5: Actions */}
+                          {/* Quick Actions */}
                           <div className="flex items-center gap-2 pt-2 border-t" onClick={(e) => e.stopPropagation()}>
                             <Button
-                              variant="outline"
                               size="sm"
                               onClick={() => router.push(`/builder?id=${invoice._id}`)}
-                              className="gap-1.5 flex-1 h-9"
+                              className="gap-2 flex-1 h-10 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                             >
-                              <Eye className="h-4 w-4" />
-                              <span className="text-sm">View</span>
+                              <Edit className="h-4 w-4" />
+                              <span>Edit</span>
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleShare(invoice._id, invoice.number)}
-                              className="gap-1.5 flex-1 h-9"
+                              className="gap-2 h-10 px-4 font-semibold border-2"
                             >
                               <Share2 className="h-4 w-4" />
-                              <span className="text-sm">Share</span>
                             </Button>
                             <Button
                               ref={(el) => { if (!menuButtonRefs.current[`mobile-${invoice._id}`]) menuButtonRefs.current[`mobile-${invoice._id}`] = el }}
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -771,7 +822,7 @@ function InvoicesContent() {
                                   setOpenMenuId(invoice._id)
                                 }
                               }}
-                              className="px-3 h-9"
+                              className="px-4 h-10 border-2"
                             >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
@@ -780,159 +831,156 @@ function InvoicesContent() {
 
                         {/* Desktop Layout */}
                         <div className="hidden sm:block">
-                      <div className="flex items-start justify-between gap-6">
-                        {/* LEFT SECTION: Invoice Identity & Client */}
-                        <div className="flex-1 min-w-0 space-y-3">
-                              {/* Invoice Number & Client */}
-                          <div>
-                                <h3 
-                                  className="font-bold text-xl text-foreground mb-1 hover:text-primary cursor-pointer transition-colors"
-                                  onClick={() => router.push(`/builder?id=${invoice._id}`)}
-                                >
-                              {invoice.number}
-                            </h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <User className="h-4 w-4 flex-shrink-0" />
-                              <span className="truncate">{invoice.clientName || 'No client specified'}</span>
-                            </div>
-                          </div>
-
-                              {/* Overdue Warning */}
-                              {overdueStatus && (
-                                <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
-                                  <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
-                                  <span className="text-sm font-medium text-red-700">
-                                    {daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`}
-                                  </span>
+                          <div className="flex items-center justify-between gap-6 mb-4">
+                            {/* LEFT: Invoice Header */}
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-3 mb-1">
+                                  <h3 
+                                    className="font-bold text-xl text-foreground hover:text-primary cursor-pointer transition-colors truncate"
+                                    onClick={() => router.push(`/builder?id=${invoice._id}`)}
+                                  >
+                                    {invoice.number}
+                                  </h3>
+                                  <Badge 
+                                    className={`text-xs font-bold px-3 py-1 ${getStatusColor(invoice.status)}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {invoice.status === 'draft' && '\ud83d\udcdd Draft'}
+                                    {invoice.status === 'sent' && '\ud83d\udce4 Sent'}
+                                    {invoice.status === 'viewed' && '\ud83d\udc41\ufe0f Viewed'}
+                                    {invoice.status === 'paid' && '\u2705 Paid'}
+                                    {invoice.status === 'overdue' && '\u26a0\ufe0f Overdue'}
+                                    {invoice.status === 'void' && '\ud83d\udeab Void'}
+                                  </Badge>
+                                  {invoice.payment?.enabled && (
+                                    <Badge className="bg-green-100 text-green-700 border-green-300 text-xs px-2 py-1">
+                                      <CreditCard className="h-3 w-3 mr-1 inline" />
+                                      Payment
+                                    </Badge>
+                                  )}
                                 </div>
-                              )}
-
-                              {/* Financial Info */}
-                              <div className="flex items-center gap-8">
-                            <div>
-                              <p className="text-xs text-muted-foreground font-medium mb-1 uppercase tracking-wider">
-                                Amount
-                              </p>
-                                  <p className={`text-2xl font-bold ${overdueStatus ? 'text-red-700' : 'text-foreground'}`}>
-                                ${invoice.total?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
-                              </p>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <User className="h-4 w-4 flex-shrink-0" />
+                                  <span className="truncate">{invoice.clientName || 'No client specified'}</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="h-12 w-px bg-border" />
-                            <div>
-                              <p className="text-xs text-muted-foreground font-medium mb-1 uppercase tracking-wider">
-                                Due Date
-                              </p>
-                                  <p className={`text-sm font-semibold ${overdueStatus ? 'text-red-700' : 'text-foreground'}`}>
-                                {new Date(invoice.dueDate).toLocaleDateString('en-US', { 
-                                  month: 'long', 
-                                  day: 'numeric',
-                                  year: 'numeric'
-                                })}
-                              </p>
-                            </div>
-                                
-                                {/* Payment Status Indicator */}
-                                {invoice.payment?.enabled && (
-                                  <>
-                                    <div className="h-12 w-px bg-border" />
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
-                                      <CreditCard className="h-4 w-4 text-green-600" />
-                                      <span className="text-xs font-medium text-green-700">Payment Enabled</span>
-                                    </div>
-                                  </>
-                                )}
-                          </div>
 
-                              {/* Quick Actions - Desktop */}
-                              <div className="flex items-center gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => router.push(`/builder?id=${invoice._id}`)}
-                                  className="gap-2"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                  View
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleShare(invoice._id, invoice.number)}
-                                  className="gap-2"
-                                >
-                                  <Share2 className="h-4 w-4" />
-                                  Share
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleDuplicate(invoice._id, invoice.number)}
-                                  className="gap-2"
-                                >
-                                  <Copy className="h-4 w-4" />
-                                  Duplicate
-                                </Button>
-                          </div>
-                        </div>
-
-                            {/* RIGHT SECTION: Status & Actions - Desktop Only */}
-                        <div className="flex flex-col gap-3 items-end" onClick={(e) => e.stopPropagation()}>
-                          {/* Status Dropdown */}
-                          <select
-                            value={invoice.status}
-                            onChange={(e) => handleStatusChange(invoice._id, e.target.value)}
-                            className={`text-xs font-semibold px-3 py-1.5 rounded-full border-0 cursor-pointer shadow-sm hover:shadow transition-shadow ${getStatusColor(invoice.status)}`}
-                          >
-                            <option value="draft">Draft</option>
-                            <option value="sent">Sent</option>
-                            <option value="viewed">Viewed</option>
-                            <option value="paid">Paid</option>
-                            <option value="overdue">Overdue</option>
-                            <option value="void">Void</option>
-                          </select>
-
-                          {/* Actions Menu */}
-                          <div className="relative">
-                            <Button
-                              ref={(el) => { menuButtonRefs.current[invoice._id] = el }}
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (openMenuId === invoice._id) {
-                                  setOpenMenuId(null)
-                                  setMenuPosition(null)
-                                } else {
-                                  const button = menuButtonRefs.current[invoice._id]
-                                  if (button) {
-                                    const rect = button.getBoundingClientRect()
-                                    const spaceBelow = window.innerHeight - rect.bottom
-                                    const menuHeight = 400 // approximate menu height
-                                    
-                                    // Position dropdown below or above button based on available space
-                                    if (spaceBelow >= menuHeight) {
-                                      // Position below
-                                      setMenuPosition({
-                                        top: rect.bottom + 8,
-                                        right: window.innerWidth - rect.right
-                                      })
-                                    } else {
-                                      // Position above
-                                      setMenuPosition({
-                                        top: rect.top - menuHeight - 8,
-                                        right: window.innerWidth - rect.right
-                                      })
+                            {/* RIGHT: Quick Actions */}
+                            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => router.push(`/builder?id=${invoice._id}`)}
+                                className="gap-2 hover:bg-blue-50 hover:border-blue-400 transition-all"
+                              >
+                                <Edit className="h-4 w-4" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleShare(invoice._id, invoice.number)}
+                                className="gap-2 hover:bg-purple-50 hover:border-purple-400 transition-all"
+                              >
+                                <Share2 className="h-4 w-4" />
+                                Share
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDuplicate(invoice._id, invoice.number)}
+                                className="gap-2 hover:bg-green-50 hover:border-green-400 transition-all"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                ref={(el) => { menuButtonRefs.current[invoice._id] = el }}
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  if (openMenuId === invoice._id) {
+                                    setOpenMenuId(null)
+                                    setMenuPosition(null)
+                                  } else {
+                                    const button = menuButtonRefs.current[invoice._id]
+                                    if (button) {
+                                      const rect = button.getBoundingClientRect()
+                                      const spaceBelow = window.innerHeight - rect.bottom
+                                      const menuHeight = 400
+                                      
+                                      if (spaceBelow >= menuHeight) {
+                                        setMenuPosition({
+                                          top: rect.bottom + 8,
+                                          right: window.innerWidth - rect.right
+                                        })
+                                      } else {
+                                        setMenuPosition({
+                                          top: rect.top - menuHeight - 8,
+                                          right: window.innerWidth - rect.right
+                                        })
+                                      }
                                     }
+                                    setOpenMenuId(invoice._id)
                                   }
-                                  setOpenMenuId(invoice._id)
-                                }
-                              }}
-                              className="h-8 w-8 p-0 hover:bg-secondary"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
+                                }}
+                                className="h-9 w-9 p-0 hover:bg-slate-100"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
 
-                            {/* Dropdown Menu - Rendered via Portal */}
+                          {/* Content Section */}
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-6">{/* Invoice Number & Client - now moved up */}
+                          <div className="hidden">
+                            <h3></h3>
+                            <div></div>
+                          </div>
+
+                            {/* Overdue Warning */}
+                            {overdueStatus && (
+                              <div className="flex items-center gap-2 px-4 py-2.5 bg-red-50 border-2 border-red-200 rounded-xl">
+                                <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                                <span className="text-sm font-bold text-red-900">
+                                  {daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Financial Info */}
+                            <div className="flex items-center gap-8">
+                              <div>
+                                <p className="text-xs text-slate-600 font-bold mb-1 uppercase tracking-wider">
+                                  Amount Due
+                                </p>
+                                <p className={`text-3xl font-bold ${overdueStatus ? 'text-red-700' : 'text-slate-900'}`}>
+                                  ${invoice.total?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                                </p>
+                              </div>
+                              <div className="h-14 w-px bg-slate-200" />
+                              <div>
+                                <p className="text-xs text-slate-600 font-bold mb-1 uppercase tracking-wider flex items-center gap-1">
+                                  <Calendar className="h-3.5 w-3.5" />
+                                  Due Date
+                                </p>
+                                <p className={`text-sm font-bold ${overdueStatus ? 'text-red-700' : 'text-slate-700'}`}>
+                                  {new Date(invoice.dueDate).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                                
+                            </div>
+                          </div>
+                          </div>
+
+                          {/* Dropdown Menu - Rendered via Portal */}
                             {openMenuId === invoice._id && menuPosition && typeof window !== 'undefined' && createPortal(
                               <>
                                 {/* Backdrop to close menu */}
@@ -966,6 +1014,37 @@ function InvoicesContent() {
                                     <Edit className="h-4 w-4 text-primary" />
                                     <span>View & Edit</span>
                                   </button>
+                                  <div className="h-px bg-border" />
+                                  
+                                  {/* Change Status Submenu */}
+                                  <div className="px-2 py-1.5 bg-slate-50">
+                                    <p className="text-xs font-bold text-slate-600 uppercase tracking-wider px-2">Change Status</p>
+                                  </div>
+                                  {['draft', 'sent', 'viewed', 'paid', 'overdue', 'void'].map((status) => (
+                                    <button
+                                      key={status}
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleStatusChange(invoice._id, status)
+                                        setOpenMenuId(null)
+                                        setMenuPosition(null)
+                                      }}
+                                      className={`w-full px-4 py-2 text-left text-sm hover:bg-secondary transition-colors flex items-center gap-3 ${
+                                        invoice.status === status ? 'bg-blue-50 font-semibold' : ''
+                                      }`}
+                                    >
+                                      {invoice.status === status && <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+                                      {invoice.status !== status && <div className="h-4 w-4" />}
+                                      <span className="capitalize">
+                                        {status === 'draft' && '\ud83d\udcdd Draft'}
+                                        {status === 'sent' && '\ud83d\udce4 Sent'}
+                                        {status === 'viewed' && '\ud83d\udc41\ufe0f Viewed'}
+                                        {status === 'paid' && '\u2705 Paid'}
+                                        {status === 'overdue' && '\u26a0\ufe0f Overdue'}
+                                        {status === 'void' && '\ud83d\udeab Void'}
+                                      </span>
+                                    </button>
+                                  ))}
                                   <div className="h-px bg-border" />
                                   <button
                                     onClick={(e) => {
@@ -1032,12 +1111,9 @@ function InvoicesContent() {
                               </>,
                               document.body
                             )}
-                          </div>
-                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
                   )
                 })}
               </div>

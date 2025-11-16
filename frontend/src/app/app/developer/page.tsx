@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ProtectedRoute } from '@/components/auth/protected-route'
-import { UserDropdown } from '@/components/ui/user-dropdown'
+import { AppNavigation } from '@/components/ui/app-navigation'
 import { FeatureGate } from '@/components/feature-gate'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { OpenApiPlayground } from '@/components/developer/openapi-playground'
@@ -28,6 +29,7 @@ import {
   Book,
   Send,
   FileJson,
+  Clock,
 } from 'lucide-react'
 
 interface ApiKey {
@@ -712,182 +714,244 @@ function DeveloperContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-6 min-w-0 flex-1">
-              <Link href="/app/invoices" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#1e293b] flex items-center justify-center text-white font-black text-xs sm:text-sm">
-                  IN
-                </div>
-                <span className="text-lg sm:text-xl font-bold">Invoicer</span>
-              </Link>
-            </div>
-            <UserDropdown />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20">
+      <AppNavigation />
 
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="mb-6">
-            {/* <h1 className="text-2xl font-bold text-muted-foreground mb-6">Developer Mode</h1> */}
-            <h1 className="text-base sm:text-2xl font-bold text-muted-foreground truncate">
-                <span className="hidden sm:inline">Developer Mode</span>
-                <span className="sm:hidden">Developer</span>
-              </h1>
-        </div>
-        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+          {/* Page Header */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg">
+                <Code className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-4xl font-bold text-slate-900">Developer Mode</h1>
+                <p className="text-sm sm:text-base text-slate-600 mt-0.5">
+                  API keys, webhooks, and integrations
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Info Banner */}
-          <Card className="border-blue-200 bg-blue-50">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <Code className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-blue-900 mb-1">API Access Enabled</h3>
-                  <p className="text-sm text-blue-800">
+          <Card className="border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50/50 shadow-md">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-indigo-100 rounded-xl">
+                  <CheckCircle className="h-6 w-6 text-indigo-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-indigo-900 mb-2 text-lg">API Access Enabled</h3>
+                  <p className="text-sm sm:text-base text-indigo-800 leading-relaxed">
                     Integrate your invoicing system with external applications using API keys and webhooks.
-                    Automate workflows, sync data, and build custom integrations.
+                    Automate workflows, sync data, and build custom integrations with our RESTful API.
                   </p>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200">
+                      <Zap className="h-3 w-3 mr-1" />
+                      Real-time webhooks
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200">
+                      <Key className="h-3 w-3 mr-1" />
+                      Secure API keys
+                    </Badge>
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                      <Book className="h-3 w-3 mr-1" />
+                      Full documentation
+                    </Badge>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Tabs */}
-          <div className="flex gap-2 border-b overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('api-keys')}
-              className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === 'api-keys'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-2">
+          <Card className="shadow-md overflow-hidden">
+            <div className="flex gap-1 p-2 bg-slate-50 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={() => setActiveTab('api-keys')}
+                className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  activeTab === 'api-keys'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                }`}
+              >
                 <Key className="h-4 w-4" />
                 <span className="hidden sm:inline">API Keys</span>
                 <span className="sm:hidden">Keys</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('webhooks')}
-              className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === 'webhooks'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-2">
+                {apiKeys.length > 0 && (
+                  <Badge variant={activeTab === 'api-keys' ? 'secondary' : 'default'} className="ml-1">
+                    {apiKeys.length}
+                  </Badge>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('webhooks')}
+                className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  activeTab === 'webhooks'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                }`}
+              >
                 <WebhookIcon className="h-4 w-4" />
-                Webhooks
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('openapi')}
-              className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === 'openapi'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-2">
+                <span>Webhooks</span>
+                {webhooks.length > 0 && (
+                  <Badge variant={activeTab === 'webhooks' ? 'secondary' : 'default'} className="ml-1">
+                    {webhooks.length}
+                  </Badge>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('openapi')}
+                className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  activeTab === 'openapi'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                }`}
+              >
                 <FileJson className="h-4 w-4" />
                 <span className="hidden sm:inline">API Explorer</span>
                 <span className="sm:hidden">Explorer</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('playground')}
-              className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === 'playground'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-2">
+              </button>
+              <button
+                onClick={() => setActiveTab('playground')}
+                className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  activeTab === 'playground'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                }`}
+              >
                 <Zap className="h-4 w-4" />
                 <span className="hidden sm:inline">Playground</span>
                 <span className="sm:hidden">Play</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('docs')}
-              className={`px-4 py-2 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === 'docs'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <div className="flex items-center gap-2">
+              </button>
+              <button
+                onClick={() => setActiveTab('docs')}
+                className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  activeTab === 'docs'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                }`}
+              >
                 <Book className="h-4 w-4" />
                 <span className="hidden sm:inline">Documentation</span>
                 <span className="sm:hidden">Docs</span>
-              </div>
-            </button>
-          </div>
+              </button>
+            </div>
+          </Card>
 
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="relative inline-flex">
+                <div className="animate-spin rounded-full h-20 w-20 border-4 border-slate-200 border-t-indigo-600" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Code className="h-8 w-8 text-indigo-600 animate-pulse" />
+                </div>
+              </div>
+              <p className="text-lg font-semibold text-slate-900 mt-6">Loading developer tools...</p>
+              <p className="text-sm text-muted-foreground mt-2">Please wait</p>
             </div>
           ) : (
             <>
               {/* API Keys Tab */}
               {activeTab === 'api-keys' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold">API Keys</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Manage your API keys for programmatic access
-                      </p>
-                    </div>
-                    <Button onClick={() => setShowCreateKeyModal(true)}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Key
-                    </Button>
-                  </div>
+                <div className="space-y-6">
+                  <Card className="shadow-md bg-gradient-to-r from-slate-50 to-indigo-50/50">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-indigo-100 rounded-lg">
+                            <Key className="h-5 w-5 text-indigo-600" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold text-slate-900">API Keys</h2>
+                            <p className="text-sm text-slate-600 mt-0.5">
+                              Manage your API keys for programmatic access
+                            </p>
+                          </div>
+                        </div>
+                        <Button 
+                          onClick={() => setShowCreateKeyModal(true)}
+                          className="gap-2 rounded-xl shadow-md hover:shadow-lg transition-all"
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span className="hidden sm:inline">Create Key</span>
+                          <span className="sm:hidden">Create</span>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   {apiKeys.length === 0 ? (
-                    <Card>
-                      <CardContent className="py-12">
-                        <div className="text-center text-muted-foreground">
-                          <Key className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p>No API keys yet. Create one to get started!</p>
+                    <Card className="shadow-md">
+                      <CardContent className="py-16">
+                        <div className="text-center">
+                          <div className="inline-flex p-6 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl mb-6">
+                            <Key className="h-16 w-16 text-indigo-600" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-slate-900 mb-3">No API Keys Yet</h3>
+                          <p className="text-base text-muted-foreground mb-8 max-w-md mx-auto">
+                            Create your first API key to start integrating with external applications and automate your workflows.
+                          </p>
+                          <Button 
+                            onClick={() => setShowCreateKeyModal(true)}
+                            size="lg"
+                            className="gap-2 rounded-xl shadow-md hover:shadow-lg transition-all"
+                          >
+                            <Plus className="h-5 w-5" />
+                            Create Your First API Key
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {apiKeys.map((key) => (
-                        <Card key={key.id}>
-                          <CardContent className="pt-6">
+                        <Card key={key.id} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 border-2 hover:border-indigo-200">
+                          <CardContent className="p-6">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="font-semibold truncate">{key.name}</h3>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="p-2 bg-indigo-100 rounded-lg">
+                                    <Key className="h-5 w-5 text-indigo-600" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-lg text-slate-900 truncate">{key.name}</h3>
+                                  </div>
                                   {key.isActive ? (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                                      <CheckCircle className="h-3 w-3" />
+                                    <Badge className="bg-green-100 text-green-700 hover:bg-green-200">
+                                      <CheckCircle className="h-3 w-3 mr-1" />
                                       Active
-                                    </span>
+                                    </Badge>
                                   ) : (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">
-                                      <XCircle className="h-3 w-3" />
+                                    <Badge variant="secondary">
+                                      <XCircle className="h-3 w-3 mr-1" />
                                       Disabled
-                                    </span>
+                                    </Badge>
                                   )}
                                 </div>
-                                <div className="space-y-1 text-sm">
-                                  <p className="text-muted-foreground">
-                                    <span className="font-mono">{key.prefix}_••••••••</span>
-                                  </p>
-                                  <p className="text-muted-foreground">
-                                    Usage: {key.usageCount} requests
-                                    {key.lastUsedAt && ` • Last used: ${new Date(key.lastUsedAt).toLocaleDateString()}`}
-                                  </p>
+                                <div className="space-y-3">
+                                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">API Key</p>
+                                    <p className="font-mono text-sm text-slate-900">{key.prefix}_••••••••••••••••</p>
+                                  </div>
+                                  <div className="flex flex-wrap gap-4 text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <Send className="h-4 w-4 text-slate-400" />
+                                      <span className="text-slate-600">
+                                        <span className="font-semibold text-slate-900">{key.usageCount}</span> requests
+                                      </span>
+                                    </div>
+                                    {key.lastUsedAt && (
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="h-4 w-4 text-slate-400" />
+                                        <span className="text-slate-600">
+                                          Last used {new Date(key.lastUsedAt).toLocaleDateString()}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                               <div className="flex gap-2 flex-shrink-0">
@@ -895,6 +959,8 @@ function DeveloperContent() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleToggleApiKey(key.id, key.isActive)}
+                                  className="rounded-lg"
+                                  title={key.isActive ? 'Disable key' : 'Enable key'}
                                 >
                                   <Power className="h-4 w-4" />
                                 </Button>
@@ -1033,23 +1099,38 @@ function DeveloperContent() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Getting Started</CardTitle>
-                      <CardDescription>Learn how to integrate with the Invoicer API</CardDescription>
+                      <CardDescription>Overview of how to integrate with Invoicer</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <div>
+                        <h3 className="font-semibold mb-2">What you can do</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Invoicer exposes HTTP APIs and webhooks that let you manage your invoices, clients, and analytics from your own systems. Common use cases include:
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Automatically creating invoices when orders are placed in your app.</li>
+                          <li>Syncing your client database with Invoicer.</li>
+                          <li>Pulling revenue and invoice analytics into your own dashboards.</li>
+                          <li>Receiving webhook notifications when invoices or clients change.</li>
+                        </ul>
+                      </div>
+
+                      <div>
                         <h3 className="font-semibold mb-2">Authentication</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Include your API key in the Authorization header:
+                          Every request to the Invoicer API must be authenticated using an API key you create in the <span className="font-medium">API Keys</span> tab.
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`Authorization: Bearer inv_your_api_key_here`}
-                        </pre>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Send API keys using the <code>Authorization</code> header in the form <code>Bearer inv_...</code>.</li>
+                          <li>Keep keys secret; do not embed them in publicly shipped client-side code.</li>
+                          <li>Create separate keys for production, staging, and local development.</li>
+                        </ul>
                       </div>
 
                       <div>
                         <h3 className="font-semibold mb-2">Base URL</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          External API endpoints use a separate base URL:
+                          All external API endpoints share a single base URL. Append the resource path (for example, <code>/invoices</code>) to this value in your integration.
                         </p>
                         <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`${getBackendUrl()}/public/apis/v1`}
@@ -1062,25 +1143,24 @@ function DeveloperContent() {
                       <div>
                         <h3 className="font-semibold mb-2">Content Type</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          All requests must include:
+                          The API uses JSON for both requests and responses.
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`Content-Type: application/json`}
-                        </pre>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Set <code>Content-Type: application/json</code> on requests with a body.</li>
+                          <li>Request and response bodies use camelCase field names.</li>
+                        </ul>
                       </div>
 
                       <div>
                         <h3 className="font-semibold mb-2">Response Format</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          All API responses are in JSON format:
+                          Responses are JSON objects that typically include:
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`{
-  "success": true,
-  "data": { ... },
-  "message": "Success"
-}`}
-                        </pre>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li><code>success</code>: whether the request was successful.</li>
+                          <li><code>data</code>: the main payload (for example, an invoice or list of clients).</li>
+                          <li><code>message</code>: a human-readable description of the outcome.</li>
+                        </ul>
                       </div>
                     </CardContent>
                   </Card>
@@ -1089,100 +1169,44 @@ function DeveloperContent() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Invoices API</CardTitle>
-                      <CardDescription>Manage invoices programmatically</CardDescription>
+                      <CardDescription>Create, read, update, and delete invoices</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {/* List Invoices */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
-                          <code className="text-sm">/invoices</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">List all your invoices</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X GET \\
-  ${getBackendUrl()}/public/apis/v1/invoices \\
-  -H "Authorization: Bearer inv_your_api_key" \\
-  -H "Content-Type: application/json"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Endpoints</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Use the invoice endpoints when you want to create, read, update, or delete invoices from your own systems:
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li><code>GET /invoices</code> — list invoices with optional filtering and pagination.</li>
+                          <li><code>GET /invoices/:id</code> — fetch a single invoice by its ID.</li>
+                          <li><code>POST /invoices</code> — create a new invoice with client, line items, and metadata.</li>
+                          <li><code>PUT /invoices/:id</code> — update invoice details such as status, dates, and notes.</li>
+                          <li><code>DELETE /invoices/:id</code> — permanently delete an invoice.</li>
+                        </ul>
                       </div>
 
-                      {/* Get Invoice */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
-                          <code className="text-sm">/invoices/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Get a specific invoice by ID</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X GET \\
-  ${getBackendUrl()}/public/apis/v1/invoices/invoice_id \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Key fields</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          When creating or updating invoices, you will typically work with:
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li><code>clientId</code>, <code>clientName</code>, <code>clientEmail</code> — who the invoice is for.</li>
+                          <li><code>issueDate</code>, <code>dueDate</code>, <code>currency</code> — billing details.</li>
+                          <li><code>lineItems</code> — array of items with <code>description</code>, <code>quantity</code>, and <code>rate</code>.</li>
+                          <li><code>status</code> — lifecycle state such as <code>draft</code>, <code>sent</code>, or <code>paid</code>.</li>
+                          <li><code>notes</code> and other optional metadata fields.</li>
+                        </ul>
                       </div>
 
-                      {/* Create Invoice */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded">POST</span>
-                          <code className="text-sm">/invoices</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Create a new invoice</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X POST \\
-  ${getBackendUrl()}/public/apis/v1/invoices \\
-  -H "Authorization: Bearer inv_your_api_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "clientId": "client_id",
-    "clientName": "Acme Corp",
-    "clientEmail": "client@acme.com",
-    "issueDate": "2025-11-02",
-    "dueDate": "2025-12-02",
-    "currency": "USD",
-    "lineItems": [
-      {
-        "description": "Web Development",
-        "quantity": 40,
-        "rate": 100
-      }
-    ],
-    "notes": "Thank you for your business!"
-  }'`}
-                        </pre>
-                      </div>
-
-                      {/* Update Invoice */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded">PUT</span>
-                          <code className="text-sm">/invoices/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Update an existing invoice</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X PUT \\
-  ${getBackendUrl()}/public/apis/v1/invoices/invoice_id \\
-  -H "Authorization: Bearer inv_your_api_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "status": "sent",
-    "notes": "Updated notes"
-  }'`}
-                        </pre>
-                      </div>
-
-                      {/* Delete Invoice */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded">DELETE</span>
-                          <code className="text-sm">/invoices/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Delete an invoice</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X DELETE \\
-  ${getBackendUrl()}/public/apis/v1/invoices/invoice_id \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Typical workflows</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Generate invoices automatically after an order is placed in your app.</li>
+                          <li>Update invoice status to <code>paid</code> when your payment provider confirms payment.</li>
+                          <li>Render invoices in your own dashboard using the data returned by the API.</li>
+                        </ul>
                       </div>
                     </CardContent>
                   </Card>
@@ -1191,90 +1215,40 @@ function DeveloperContent() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Clients API</CardTitle>
-                      <CardDescription>Manage your client database</CardDescription>
+                      <CardDescription>Manage your client database programmatically</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {/* List Clients */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
-                          <code className="text-sm">/clients</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">List all clients with optional search</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X GET \\
-  ${getBackendUrl()}/public/apis/v1/clients?search=acme \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Endpoints</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Use the clients endpoints to keep your customer data in sync with Invoicer:
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li><code>GET /clients</code> — list clients with optional search and pagination.</li>
+                          <li><code>GET /clients/:id</code> — fetch a single client by ID.</li>
+                          <li><code>POST /clients</code> — create a new client record.</li>
+                          <li><code>PUT /clients/:id</code> — update client details.</li>
+                          <li><code>DELETE /clients/:id</code> — delete a client.</li>
+                        </ul>
                       </div>
 
-                      {/* Get Client */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
-                          <code className="text-sm">/clients/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Get a specific client by ID</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X GET \\
-  ${getBackendUrl()}/public/apis/v1/clients/client_id \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Key fields</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li><code>name</code> and <code>company</code> — display information.</li>
+                          <li><code>email</code> and <code>phone</code> — primary contact details.</li>
+                          <li><code>address</code> — billing or mailing address.</li>
+                          <li>Additional metadata and tags depending on your usage.</li>
+                        </ul>
                       </div>
 
-                      {/* Create Client */}
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded">POST</span>
-                          <code className="text-sm">/clients</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Create a new client</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X POST \\
-  ${getBackendUrl()}/public/apis/v1/clients \\
-  -H "Authorization: Bearer inv_your_api_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Acme Corporation",
-    "email": "contact@acme.com",
-    "company": "Acme Corp",
-    "address": "123 Business St, City, State 12345",
-    "phone": "+1234567890"
-  }'`}
-                        </pre>
-                      </div>
-
-                      {/* Update Client */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded">PUT</span>
-                          <code className="text-sm">/clients/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Update client information</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X PUT \\
-  ${getBackendUrl()}/public/apis/v1/clients/client_id \\
-  -H "Authorization: Bearer inv_your_api_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "email": "newemail@acme.com",
-    "phone": "+1987654321"
-  }'`}
-                        </pre>
-                      </div>
-
-                      {/* Delete Client */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded">DELETE</span>
-                          <code className="text-sm">/clients/:id</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">Delete a client</p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X DELETE \\
-  ${getBackendUrl()}/public/apis/v1/clients/client_id \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Typical workflows</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Sync clients from your CRM into Invoicer.</li>
+                          <li>Automatically create a client when a user signs up in your app.</li>
+                          <li>Keep contact details up to date from a single source of truth.</li>
+                        </ul>
                       </div>
                     </CardContent>
                   </Card>
@@ -1286,45 +1260,30 @@ function DeveloperContent() {
                       <CardDescription>Access your business analytics data</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {/* Get Analytics */}
                       <div>
+                        <h3 className="font-semibold mb-2">Overview</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          The analytics API provides aggregated metrics about your invoices and revenue.
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Track total and paid revenue over time.</li>
+                          <li>Monitor outstanding and overdue invoices.</li>
+                          <li>Identify top clients and currencies.</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h3 className="font-semibold mb-2">Endpoint</h3>
                         <div className="flex items-center gap-2 mb-2">
                           <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">GET</span>
                           <code className="text-sm">/analytics</code>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-3">Get analytics data for a specific period</p>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          <strong>Query Parameters:</strong> period (30d, 90d, 1y, all)
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Use this endpoint to retrieve aggregated analytics for your account. It supports period filters such as <code>30d</code>, <code>90d</code>, <code>1y</code>, or <code>all</code> via query parameters.
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`curl -X GET \\
-  ${getBackendUrl()}/public/apis/v1/analytics?period=30d \\
-  -H "Authorization: Bearer inv_your_api_key"`}
-                        </pre>
-                        <div className="mt-3">
-                          <p className="text-sm font-medium mb-2">Response:</p>
-                          <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`{
-  "success": true,
-  "data": {
-    "invoiceStats": {
-      "total": 45,
-      "paid": 30,
-      "pending": 10,
-      "overdue": 5,
-      "totalRevenue": 125000,
-      "paidRevenue": 95000
-    },
-    "revenueOverTime": [...],
-    "topClients": [...],
-    "currencyBreakdown": {
-      "USD": 100000,
-      "EUR": 25000
-    }
-  }
-}`}
-                          </pre>
-                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          The response typically includes invoice stats, revenue over time, top clients, and currency breakdowns that you can use to power your own dashboards.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -1337,118 +1296,83 @@ function DeveloperContent() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <div>
-                        <h3 className="font-semibold mb-2">Available Events</h3>
+                        <h3 className="font-semibold mb-2">Available events</h3>
                         <div className="grid grid-cols-2 gap-2 mb-4">
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.created</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.updated</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.deleted</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.sent</code>
-                          <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.viewed</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.paid</code>
+                          <code className="text-xs bg-blue-50 px-2 py-1 rounded">invoice.overdue</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">client.created</code>
                           <code className="text-xs bg-blue-50 px-2 py-1 rounded">client.updated</code>
-                          <code className="text-xs bg-blue-50 px-2 py-1 rounded">payment.received</code>
-                          <code className="text-xs bg-blue-50 px-2 py-1 rounded">payment.failed</code>
+                          <code className="text-xs bg-blue-50 px-2 py-1 rounded">client.deleted</code>
                         </div>
-                      </div>
-
-                      <div>
-                        <h3 className="font-semibold mb-2">Webhook Payload</h3>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          When an event occurs, we'll POST to your webhook URL:
+                        <p className="text-sm text-muted-foreground">
+                          Each event delivers a JSON payload with the relevant resource and metadata.
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`{
-  "event": "invoice.paid",
-  "timestamp": "2025-11-02T10:30:00Z",
-  "data": {
-    "id": "invoice_id",
-    "number": "INV-001",
-    "status": "paid",
-    "total": 5000,
-    "clientName": "Acme Corp",
-    ...
-  }
-}`}
-                        </pre>
                       </div>
 
                       <div>
-                        <h3 className="font-semibold mb-2">Signature Verification</h3>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          All webhooks include an HMAC-SHA256 signature in the <code>X-Webhook-Signature</code> header:
+                        <h3 className="font-semibold mb-2">How webhooks work</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Webhooks allow Invoicer to send HTTP POST requests to your server when certain events happen.
                         </p>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`const crypto = require('crypto');
-
-// Verify webhook signature
-const signature = req.headers['x-webhook-signature'];
-const payload = JSON.stringify(req.body);
-
-const expectedSignature = crypto
-  .createHmac('sha256', WEBHOOK_SECRET)
-  .update(payload)
-  .digest('hex');
-
-if (signature === expectedSignature) {
-  // Webhook is authentic
-  console.log('Webhook verified!');
-} else {
-  // Invalid signature
-  console.error('Invalid webhook signature');
-}`}
-                        </pre>
+                        <ol className="list-decimal list-inside text-sm text-muted-foreground space-y-1">
+                          <li>You register a webhook URL in the <span className="font-medium">Webhooks</span> tab.</li>
+                          <li>You choose which event types you want to subscribe to.</li>
+                          <li>When an event occurs, Invoicer sends a JSON payload to your endpoint.</li>
+                          <li>Your server processes the payload and responds with a 2xx status code.</li>
+                        </ol>
                       </div>
 
                       <div>
-                        <h3 className="font-semibold mb-2">Best Practices</h3>
+                        <h3 className="font-semibold mb-2">Payload shape</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Payloads include an event type, timestamp, and the associated resource (such as an invoice or client). Use these values to drive your own workflows and auditing.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h3 className="font-semibold mb-2">Security & reliability</h3>
                         <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                          <li>Always verify the webhook signature</li>
-                          <li>Return a 200 status code quickly (process asynchronously)</li>
-                          <li>Implement idempotency (webhooks may be sent multiple times)</li>
-                          <li>Use HTTPS for your webhook endpoint</li>
-                          <li>Handle webhook failures gracefully</li>
+                          <li>Use a unique, secret HTTPS endpoint URL.</li>
+                          <li>Validate any shared secrets or authentication headers you configure.</li>
+                          <li>Return a 2xx status quickly and process heavier work asynchronously.</li>
+                          <li>Make your handler idempotent so duplicate deliveries are safe.</li>
                         </ul>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Error Handling */}
+                  {/* Error Handling & Rate Limits */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>Error Handling</CardTitle>
-                      <CardDescription>Understanding API errors</CardDescription>
+                      <CardTitle>Error Handling & Rate Limits</CardTitle>
+                      <CardDescription>Best practices for reliable integrations</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                       <div>
-                        <h3 className="font-semibold mb-2">Error Response Format</h3>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`{
-  "success": false,
-  "message": "Invoice not found",
-  "error": "NOT_FOUND"
-}`}
-                        </pre>
-                      </div>
-
-                      <div>
-                        <h3 className="font-semibold mb-2">HTTP Status Codes</h3>
-                        <div className="space-y-2 text-sm">
+                        <h3 className="font-semibold mb-2">HTTP status codes</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          The API uses standard HTTP status codes to indicate success or failure.
+                        </p>
+                        <div className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto space-y-1">
                           <div className="flex justify-between">
                             <code>200 OK</code>
-                            <span className="text-muted-foreground">Request successful</span>
+                            <span className="text-muted-foreground">Request succeeded</span>
                           </div>
                           <div className="flex justify-between">
                             <code>201 Created</code>
-                            <span className="text-muted-foreground">Resource created</span>
+                            <span className="text-muted-foreground">Resource created successfully</span>
                           </div>
                           <div className="flex justify-between">
                             <code>400 Bad Request</code>
-                            <span className="text-muted-foreground">Invalid request data</span>
+                            <span className="text-muted-foreground">Invalid parameters or payload</span>
                           </div>
                           <div className="flex justify-between">
                             <code>401 Unauthorized</code>
-                            <span className="text-muted-foreground">Invalid or missing API key</span>
+                            <span className="text-muted-foreground">Missing or invalid API key</span>
                           </div>
                           <div className="flex justify-between">
                             <code>403 Forbidden</code>
@@ -1468,99 +1392,47 @@ if (signature === expectedSignature) {
                           </div>
                         </div>
                       </div>
+
+                      <div>
+                        <h3 className="font-semibold mb-2">Rate limits</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          To keep the service reliable for everyone, API requests may be rate limited.
+                        </p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          <li>Use caching where appropriate for read-heavy workloads.</li>
+                          <li>Back off and retry with exponential delays when you receive <code>429</code> responses.</li>
+                          <li>Contact support if you need higher throughput for your use case.</li>
+                        </ul>
+                      </div>
                     </CardContent>
                   </Card>
 
-                  {/* SDKs and Libraries */}
+                  {/* Tools & Workflows */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>Code Examples</CardTitle>
-                      <CardDescription>Integration examples in different languages</CardDescription>
+                      <CardTitle>Tools & Workflows</CardTitle>
+                      <CardDescription>Ways to explore and integrate with the API</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <div>
-                        <h3 className="font-semibold mb-2">JavaScript / Node.js</h3>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`const axios = require('axios');
-
-const apiKey = 'inv_your_api_key';
-const baseURL = '${getBackendUrl()}/public/apis/v1';
-
-async function listInvoices() {
-  try {
-    const response = await axios.get(\`\${baseURL}/invoices\`, {
-      headers: {
-        'Authorization': \`Bearer \${apiKey}\`,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    console.log(response.data);
-  } catch (error) {
-    console.error('Error:', error.response.data);
-  }
-}
-
-listInvoices();`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">OpenAPI Explorer</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Use the <span className="font-medium">API Explorer</span> tab to browse the full OpenAPI/Swagger documentation for every endpoint. You can inspect request and response schemas and try requests interactively with your own API key.
+                        </p>
                       </div>
 
                       <div>
-                        <h3 className="font-semibold mb-2">Python</h3>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`import requests
-
-api_key = 'inv_your_api_key'
-base_url = '${getBackendUrl()}/public/apis/v1'
-
-headers = {
-    'Authorization': f'Bearer {api_key}',
-    'Content-Type': 'application/json'
-}
-
-# List invoices
-response = requests.get(f'{base_url}/invoices', headers=headers)
-print(response.json())
-
-# Create invoice
-invoice_data = {
-    'clientName': 'Acme Corp',
-    'issueDate': '2025-11-02',
-    'lineItems': [
-        {'description': 'Service', 'quantity': 1, 'rate': 1000}
-    ]
-}
-
-response = requests.post(
-    f'{base_url}/invoices',
-    headers=headers,
-    json=invoice_data
-)
-print(response.json())`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">API Playground</h3>
+                        <p className="text-sm text-muted-foreground">
+                          The <span className="font-medium">Playground</span> tab lets you send test requests directly from the browser. Choose an endpoint, select an API key, and inspect the live response without writing any code.
+                        </p>
                       </div>
 
                       <div>
-                        <h3 className="font-semibold mb-2">PHP</h3>
-                        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`<?php
-$apiKey = 'inv_your_api_key';
-$baseURL = '${getBackendUrl()}/public/apis/v1';
-
-$ch = curl_init("$baseURL/invoices");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $apiKey,
-    'Content-Type: application/json'
-]);
-
-$response = curl_exec($ch);
-curl_close($ch);
-
-$data = json_decode($response, true);
-print_r($data);
-?>`}
-                        </pre>
+                        <h3 className="font-semibold mb-2">Production integrations</h3>
+                        <p className="text-sm text-muted-foreground">
+                          For production, call the HTTP APIs from your backend or serverless functions using your preferred HTTP client or SDK. Use API keys for authentication, handle non-2xx responses and rate limits, and combine APIs and webhooks to build reliable, event-driven workflows.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -1730,4 +1602,3 @@ print_r($data);
     </div>
   )
 }
-
