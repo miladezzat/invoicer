@@ -1340,8 +1340,18 @@
         </div>
 
         <div class="row-full">
+          <label>Freelancer Address</label>
+          <textarea id="in_freelancer_address" placeholder="Your business address (optional)" rows="2"></textarea>
+        </div>
+
+        <div class="row-full">
           <label>Client Name</label>
           <input id="in_client" placeholder="Client name" value="Company Name" />
+        </div>
+
+        <div class="row-full">
+          <label>Client Address</label>
+          <textarea id="in_client_address" placeholder="Client address (optional)" rows="2"></textarea>
         </div>
 
         <div class="row">
@@ -1648,7 +1658,9 @@
       SELECTORS: {
         freelancer: '#in_freelancer',
         email: '#in_email',
+        freelancerAddress: '#in_freelancer_address',
         client: '#in_client',
+        clientAddress: '#in_client_address',
         clientEmail: '#in_client_email',
         number: '#in_number',
         date: '#in_date',
@@ -2001,11 +2013,28 @@
           // Parties
           const pFrom = invoice.getElementById('p_from');
           if (pFrom) {
-            pFrom.innerHTML = `${Utils.$(CONFIG.SELECTORS.freelancer).value}<br/><span class="muted">${Utils.$(CONFIG.SELECTORS.email).value}</span>`;
+            const freelancerName = Utils.$(CONFIG.SELECTORS.freelancer).value;
+            const freelancerEmail = Utils.$(CONFIG.SELECTORS.email).value;
+            const freelancerAddress = Utils.$(CONFIG.SELECTORS.freelancerAddress).value;
+            
+            let fromHTML = `${freelancerName}<br/><span class="muted">${freelancerEmail}</span>`;
+            if (freelancerAddress && freelancerAddress.trim()) {
+              fromHTML += `<br/><span class="muted" style="font-size: 13px; line-height: 1.6;">${freelancerAddress.replace(/\n/g, '<br/>')}</span>`;
+            }
+            pFrom.innerHTML = fromHTML;
           }
 
           const pTo = invoice.getElementById('p_to');
-          if (pTo) pTo.textContent = Utils.$(CONFIG.SELECTORS.client).value || 'Client Name';
+          if (pTo) {
+            const clientName = Utils.$(CONFIG.SELECTORS.client).value || 'Client Name';
+            const clientAddress = Utils.$(CONFIG.SELECTORS.clientAddress).value;
+            
+            let toHTML = clientName;
+            if (clientAddress && clientAddress.trim()) {
+              toHTML += `<br/><span class="muted" style="font-size: 13px; line-height: 1.6;">${clientAddress.replace(/\n/g, '<br/>')}</span>`;
+            }
+            pTo.innerHTML = toHTML;
+          }
 
           // Line items table
           const tbody = invoice.getElementById('p_items');
@@ -2044,9 +2073,12 @@
           const taxRow = invoice.getElementById('p_tax_row');
           const pTax = invoice.getElementById('p_tax');
           if (taxRow && pTax) {
-            if (taxPct > 0) {
+            if (taxPct > 0 || tax > 0) {
               taxRow.style.display = 'flex';
-              pTax.textContent = `${taxPct}% (${Utils.formatMoney(tax, currency)})`;
+              pTax.textContent = Utils.formatMoney(tax, currency);
+              // Update the label to show percentage
+              const taxLabel = taxRow.querySelector('span:first-child');
+              if (taxLabel) taxLabel.textContent = `Tax (${taxPct}%)`;
             } else {
               taxRow.style.display = 'none';
             }
@@ -2057,7 +2089,7 @@
           if (discountRow && pDiscount) {
             if (discount > 0) {
               discountRow.style.display = 'flex';
-              pDiscount.textContent = Utils.formatMoney(discount, currency);
+              pDiscount.textContent = `-${Utils.formatMoney(discount, currency)}`;
             } else {
               discountRow.style.display = 'none';
             }

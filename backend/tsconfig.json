@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    
+    // Strict Type-Checking Options (Production Ready & Pragmatic)
+    // Note: Some options are relaxed for practical production use with NestJS/Mongoose
+    "strict": false, // Individual strict options configured below for balance
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false, // Disabled for class-validator DTOs and Mongoose schemas
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "useUnknownInCatchVariables": false, // Allows error.message in catch blocks
+    
+    // Additional Checks (relaxed for practical production use)
+    "noUnusedLocals": false, // Can be enabled after code review
+    "noUnusedParameters": false, // Can be enabled after code review  
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    // Module Resolution
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+

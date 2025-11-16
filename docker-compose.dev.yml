@@ -1,0 +1,22 @@
+services:
+  # MongoDB Database only
+  mongodb:
+    image: mongo:7
+    container_name: invoice-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: invoice-builder
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - invoice-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  invoice-network:
+    driver: bridge
+
