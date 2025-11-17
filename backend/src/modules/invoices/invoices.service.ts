@@ -817,80 +817,95 @@ export class InvoicesService {
     userId: string,
     clientEmail: string,
   ): Promise<void> {
-    // 1. Find invoice and verify ownership
-    const invoice = await this.findOne(invoiceId, userId);
+    try {
+      this.logger.log(`Starting email send for invoice ${invoiceId} to ${clientEmail}`);
+      
+      // 1. Find invoice and verify ownership
+      const invoice = await this.findOne(invoiceId, userId);
+      this.logger.log(`Invoice found: ${invoice.number}`);
 
-    // 2. Populate client data if needed
-    await invoice.populate('clientId');
+      // 2. Populate client data if needed
+      await invoice.populate('clientId');
+      this.logger.log(`Client data populated`);
 
-    // 3. Generate PDF HTML
-    const invoiceHtml = this.pdfService.generateInvoiceHtml(invoice);
+      // 3. Generate PDF HTML
+      this.logger.log(`Generating PDF HTML...`);
+      const invoiceHtml = this.pdfService.generateInvoiceHtml(invoice);
+      this.logger.log(`PDF HTML generated`);
 
-    // 4. Generate PDF buffer
-    const pdfBuffer = await this.pdfService.generateInvoicePdf(invoiceHtml);
+      // 4. Generate PDF buffer
+      this.logger.log(`Generating PDF buffer with Puppeteer...`);
+      const pdfBuffer = await this.pdfService.generateInvoicePdf(invoiceHtml);
+      this.logger.log(`PDF buffer generated, size: ${pdfBuffer.length} bytes`);
 
-    // 5. Extract period from first line item (if it has dates)
-    let period: string | undefined;
-    const firstItem = invoice.lineItems?.[0];
-    if (firstItem?.periodFrom && firstItem?.periodTo) {
-      const formatDate = (date: Date) => {
-        return new Date(date).toISOString().split('T')[0];
-      };
-      period = `${formatDate(firstItem.periodFrom)} to ${formatDate(firstItem.periodTo)}`;
+      // 5. Extract period from first line item (if it has dates)
+      let period: string | undefined;
+      const firstItem = invoice.lineItems?.[0];
+      if (firstItem?.periodFrom && firstItem?.periodTo) {
+        const formatDate = (date: Date) => {
+          return new Date(date).toISOString().split('T')[0];
+        };
+        period = `${formatDate(firstItem.periodFrom)} to ${formatDate(firstItem.periodTo)}`;
+      }
+
+      // 6. Get client and freelancer names
+      const clientName = (invoice.clientId as any)?.name || invoice.clientName || 'Client';
+      const freelancerName = invoice.freelancerName || 'Freelancer';
+
+      // 7. Format dates
+      const dueDate = invoice.dueDate 
+        ? new Date(invoice.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'N/A';
+
+      // 8. Format total (convert from cents to dollars if needed)
+      const totalFormatted = (invoice.total / 100).toFixed(2);
+
+      // 9. Generate PDF filename
+      const pdfFilename = period
+        ? `Invoice_${invoice.number}_${period.replace(/ to /g, '_to_')}.pdf`
+        : `Invoice_${invoice.number}.pdf`;
+
+      // 10. Send email with PDF attachment
+      this.logger.log(`Sending email with PDF attachment...`);
+      await this.emailService.sendInvoiceEmail({
+        to: clientEmail,
+        clientName,
+        freelancerName,
+        invoiceNumber: invoice.number,
+        dueDate,
+        total: totalFormatted,
+        currency: invoice.currency,
+        pdfBuffer,
+        pdfFilename: pdfFilename.replace(/\s+/g, '_'),
+        period,
+      });
+      this.logger.log(`Email sent successfully`);
+
+      // 11. Update invoice with email tracking
+      await this.invoiceModel.findByIdAndUpdate(invoiceId, {
+        status: invoice.status === 'draft' ? 'sent' : invoice.status,
+        sentAt: new Date(),
+        emailSentTo: clientEmail,
+        $inc: { emailSentCount: 1 },
+      });
+
+      // 12. Log the action
+      await this.changeLogsService.logChange({
+        collectionName: 'invoices',
+        documentId: String(invoice._id),
+        operation: 'patch',
+        changeContext: `Invoice ${invoice.number} sent via email to ${clientEmail}`,
+        oldData: { status: invoice.status },
+        newData: { status: 'sent', emailSentTo: clientEmail },
+        userId,
+        source: 'user',
+      });
+
+      this.logger.log(`Invoice ${invoice.number} sent to ${clientEmail}`);
+    } catch (error) {
+      this.logger.error(`Failed to send invoice ${invoiceId} to ${clientEmail}`, error.stack);
+      throw error;
     }
-
-    // 6. Get client and freelancer names
-    const clientName = (invoice.clientId as any)?.name || invoice.clientName || 'Client';
-    const freelancerName = invoice.freelancerName || 'Freelancer';
-
-    // 7. Format dates
-    const dueDate = invoice.dueDate 
-      ? new Date(invoice.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-      : 'N/A';
-
-    // 8. Format total (convert from cents to dollars if needed)
-    const totalFormatted = (invoice.total / 100).toFixed(2);
-
-    // 9. Generate PDF filename
-    const pdfFilename = period
-      ? `Invoice_${invoice.number}_${period.replace(/ to /g, '_to_')}.pdf`
-      : `Invoice_${invoice.number}.pdf`;
-
-    // 10. Send email with PDF attachment
-    await this.emailService.sendInvoiceEmail({
-      to: clientEmail,
-      clientName,
-      freelancerName,
-      invoiceNumber: invoice.number,
-      dueDate,
-      total: totalFormatted,
-      currency: invoice.currency,
-      pdfBuffer,
-      pdfFilename: pdfFilename.replace(/\s+/g, '_'),
-      period,
-    });
-
-    // 11. Update invoice with email tracking
-    await this.invoiceModel.findByIdAndUpdate(invoiceId, {
-      status: invoice.status === 'draft' ? 'sent' : invoice.status,
-      sentAt: new Date(),
-      emailSentTo: clientEmail,
-      $inc: { emailSentCount: 1 },
-    });
-
-    // 12. Log the action
-    await this.changeLogsService.logChange({
-      collectionName: 'invoices',
-      documentId: String(invoice._id),
-      operation: 'patch',
-      changeContext: `Invoice ${invoice.number} sent via email to ${clientEmail}`,
-      oldData: { status: invoice.status },
-      newData: { status: 'sent', emailSentTo: clientEmail },
-      userId,
-      source: 'user',
-    });
-
-    this.logger.log(`Invoice ${invoice.number} sent to ${clientEmail}`);
   }
 
   /**

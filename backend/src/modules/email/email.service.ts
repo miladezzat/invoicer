@@ -6,11 +6,15 @@ import { Resend } from 'resend';
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private resend: Resend;
+  private fromEmail: string;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('RESEND_API_KEY');
+    this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
+    
     if (apiKey) {
       this.resend = new Resend(apiKey);
+      this.logger.log(`Email service initialized with from address: ${this.fromEmail}`);
     } else {
       this.logger.warn('RESEND_API_KEY not configured. Email sending will be disabled.');
     }
@@ -33,7 +37,7 @@ export class EmailService {
 
     try {
       await this.resend.emails.send({
-        from: 'Invoice Builder <invoices@yourdomain.com>',
+        from: this.fromEmail,
         to: [to],
         subject: `Invoice ${invoiceData.number}`,
         html: this.generateInvoiceEmailHtml(invoiceData),
@@ -63,9 +67,9 @@ export class EmailService {
 
     try {
       await this.resend.emails.send({
-        from: 'Invoice Builder <invoices@yourdomain.com>',
+        from: this.fromEmail,
         to: [to],
-        subject: `Reminder: Invoice ${invoiceData.number} Due Soon`,
+        subject: `Reminder: Invoice ${invoiceData.number} is due soon`,
         html: this.generateReminderEmailHtml(invoiceData),
       });
 
@@ -316,7 +320,7 @@ export class EmailService {
       `;
 
       await this.resend.emails.send({
-        from: 'Invoices <invoices@yourdomain.com>',
+        from: this.fromEmail,
         to: [params.to],
         subject: subject,
         html: htmlBody,

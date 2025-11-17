@@ -15,6 +15,7 @@ import { InvoicesService } from './invoices.service';
 import { InvoicesSchedulerService } from './invoices-scheduler.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { SendEmailDto } from './dto/send-email.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FeatureGuard } from '../auth/guards/feature.guard';
 import { RequireFeature } from '../auth/decorators/require-feature.decorator';
@@ -156,7 +157,7 @@ export class InvoicesController {
   async sendInvoiceEmail(
     @CurrentUser() user: any,
     @Param('id') id: string,
-    @Body() dto: { email: string },
+    @Body() dto: SendEmailDto,
   ) {
     await this.invoicesService.sendInvoiceEmail(id, user._id, dto.email);
     return { 
